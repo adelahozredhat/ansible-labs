@@ -1,0 +1,5 @@
+Para instalar las herramientas de desarrollo y configuracion del entorno (download python and ansible collection requirements)de ansible
+
+pip install ansible-dev-tools
+
+pip install ansible-dev-environment

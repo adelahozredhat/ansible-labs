@@ -1,0 +1,134 @@
+Ejemplo creacion proyecto inicial playbooks.
+
+En el directorio raiz donde queramos crearlo
+
+mkdir ansible_creator_example_playbook
+cd ansible_creator_example_playbook/
+ansible-creator init playbook ansible_creator.ansible_creator_example_playbook
+
+Resultado tree:
+.
+├── ansible.cfg
+├── ansible-navigator.yml
+├── collections
+│   ├── ansible_collections
+│   │   └── ansible_creator
+│   │       └── ansible_creator_example_playbook
+│   │           ├── README.md
+│   │           └── roles
+│   │               └── run
+│   │                   ├── README.md
+│   │                   └── tasks
+│   │                       └── main.yml
+│   └── requirements.yml
+├── devfile.yaml
+├── inventory
+│   ├── group_vars
+│   │   ├── all.yml
+│   │   ├── db_servers.yml
+│   │   ├── production.yml
+│   │   ├── test.yml
+│   │   └── web_servers.yml
+│   ├── hosts.yml
+│   └── host_vars
+│       ├── server1.yml
+│       ├── server2.yml
+│       ├── server3.yml
+│       ├── switch1.yml
+│       └── switch2.yml
+├── linux_playbook.yml
+├── network_playbook.yml
+├── README.md
+└── site.yml
+
+
+Ejemplo creacion proyecto inicial Colleccion.
+
+En el directorio raiz donde queramos crearlo
+
+mkdir ansible_collections/ansible_creator/ansible_creator_example_collection
+cd ansible_collections/ansible_creator/ansible_creator_example_collection
+ansible-creator init collection ansible_creator.ansible_creator_example_collection
+
+Resultado tree:
+.
+├── CHANGELOG.rst
+├── changelogs
+│   └── config.yaml
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING
+├── devfile.yaml
+├── docs
+│   └── docsite
+│       └── links.yml
+├── extensions
+│   ├── eda
+│   │   └── rulebooks
+│   │       └── rulebook.yml
+│   └── molecule
+│       ├── integration_hello_world
+│       │   └── molecule.yml
+│       └── utils
+│           ├── playbooks
+│           │   ├── converge.yml
+│           │   └── noop.yml
+│           └── vars
+│               └── vars.yml
+├── galaxy.yml
+├── LICENSE
+├── MAINTAINERS
+├── meta
+│   └── runtime.yml
+├── plugins
+│   ├── action
+│   │   └── __init__.py
+│   ├── cache
+│   │   └── __init__.py
+│   ├── filter
+│   │   ├── hello_world.py
+│   │   └── __init__.py
+│   ├── inventory
+│   │   └── __init__.py
+│   ├── modules
+│   │   └── __init__.py
+│   ├── module_utils
+│   │   └── __init__.py
+│   ├── plugin_utils
+│   │   └── __init__.py
+│   ├── sub_plugins
+│   │   └── __init__.py
+│   └── test
+│       └── __init__.py
+├── pyproject.toml
+├── README.md
+├── requirements.txt
+├── roles
+│   └── run
+│       ├── defaults
+│       │   └── main.yml
+│       ├── files
+│       ├── handlers
+│       │   └── main.yml
+│       ├── meta
+│       │   └── main.yml
+│       ├── README.md
+│       ├── tasks
+│       │   └── main.yml
+│       ├── templates
+│       ├── tests
+│       │   └── inventory
+│       └── vars
+│           └── main.yml
+├── test-requirements.txt
+├── tests
+│   ├── integration
+│   │   ├── __init__.py
+│   │   ├── targets
+│   │   │   └── hello_world
+│   │   │       └── tasks
+│   │   │           └── main.yml
+│   │   └── test_integration.py
+│   └── unit
+│       ├── __init__.py
+│       └── test_basic.py
+└── tox-ansible.ini

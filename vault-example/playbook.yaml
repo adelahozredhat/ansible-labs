@@ -1,0 +1,9 @@
+---
+- name: Example playbook
+  hosts: localhost
+  vars_files:
+    - vault.yaml
+  tasks:
+  - name: Debug print task-1
+    ansible.builtin.debug:
+      msg: "{{message}}"

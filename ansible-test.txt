@@ -1,0 +1,240 @@
+mkdir -p ansible_collections/ansible_creator/ansible_creator_example_collection
+mv ansible_creator_example_collection ansible_collections/ansible_creator/ansible_creator_example_collection
+cd ansible_collections/ansible_creator/ansible_creator_example_collection
+
+ansible-galaxy collection install . -p ~/.ansible/collections --force
+
+ansible-test sanity
+
+[adelahoz@fedora collection_example]$ python3.9 -m pip list
+Package             Version
+------------------- ---------
+ansible             8.7.0
+ansible-core        2.15.13
+certifi             2024.8.30
+cffi                1.17.1
+charset-normalizer  3.4.0
+cryptography        43.0.3
+exceptiongroup      1.2.2
+execnet             2.1.1
+idna                3.10
+importlib-resources 5.0.7
+iniconfig           2.0.0
+Jinja2              3.1.4
+MarkupSafe          3.0.2
+mock                5.1.0
+mocker              1.1.1
+packaging           24.2
+pip                 24.3.1
+pluggy              1.5.0
+py                  1.11.0
+pycparser           2.22
+pytest              8.3.3
+pytest-forked       1.6.0
+pytest-mock         3.14.0
+pytest-xdist        3.6.1
+PyYAML              6.0.2
+requests            2.32.3
+resolvelib          1.0.1
+setuptools          75.5.0
+tomli               2.1.0
+urllib3             2.2.3
+wheel               0.45.0
+
+
+ansible-test sanity --python 3.9
+Running sanity test "action-plugin-docs"
+Running sanity test "ansible-doc"
+Running sanity test "changelog"
+Running sanity test "compile" on Python 3.9
+Running sanity test "empty-init"
+Running sanity test "future-import-boilerplate"
+Running sanity test "ignores"
+Running sanity test "import" on Python 3.9
+Running sanity test "line-endings"
+Running sanity test "metaclass-boilerplate"
+Running sanity test "no-assert"
+Running sanity test "no-basestring"
+Running sanity test "no-dict-iteritems"
+Running sanity test "no-dict-iterkeys"
+Running sanity test "no-dict-itervalues"
+Running sanity test "no-get-exception"
+Running sanity test "no-illegal-filenames"
+Running sanity test "no-main-display"
+Running sanity test "no-smart-quotes"
+Running sanity test "no-unicode-literals"
+Running sanity test "pep8"
+Running sanity test "pslint"
+Running sanity test "pylint"
+Running sanity test "replace-urlopen"
+Running sanity test "runtime-metadata"
+Running sanity test "shebang"
+Running sanity test "shellcheck"
+Running sanity test "symlinks"
+Running sanity test "use-argspec-type-path"
+Running sanity test "use-compat-six"
+Running sanity test "validate-modules"
+Running sanity test "yamllint"
+
+ansible-test units --python 3.9
+Unit test controller with Python 3.9
+============================= test session starts ==============================
+platform linux -- Python 3.9.19, pytest-8.3.3, pluggy-1.5.0
+rootdir: /home/adelahoz/redhat/ansible-labs/template-ansible-collection-develop/ansible_collections/namespace_example/collection_example
+configfile: ../../../../../../.local/lib/python3.9/site-packages/ansible_test/_data/pytest/config/default.ini
+plugins: forked-1.6.0, xdist-3.6.1, mock-3.14.0
+created: 16/16 workers
+16 workers [19 items]
+
+...................                                                      [100%]
+- generated xml file: /home/adelahoz/redhat/ansible-labs/template-ansible-collection-develop/ansible_collections/namespace_example/collection_example/tests/output/junit/python3.9-controller-units.xml -
+============================== 19 passed in 1.05s ==============================
+
+
+ansible-test integration --python 3.9
+WARNING: Unable to determine context for the following test targets, they will be run on the target host: get_server
+Running get_server integration test role
+
+PLAY [testhost] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [testhost]
+
+TASK [get_server : Example get information] ************************************
+ok: [testhost]
+
+TASK [get_server : Debug info] *************************************************
+ok: [testhost] => {
+    "msg": {
+        "changed": false,
+        "failed": false,
+        "hosts": {
+            "hosts": {
+                "arqopasr16.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c2",
+                    "environment_description": "Preproduccio",
+                    "host_environment": "pre",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "ARQOP",
+                    "system_description": "ARQUITECTURA OPERACIO"
+                },
+                "arqopasr19.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c1",
+                    "environment_description": "Preproduccio",
+                    "host_environment": "pre",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "ARQOP",
+                    "system_description": "ARQUITECTURA OPERACIO"
+                },
+                "arqopasr21.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c1",
+                    "environment_description": "Desenvolupament / Test",
+                    "host_environment": "dsv",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "PAQFA",
+                    "system_description": "SERVIDORES PAQUETIZACION FACTORY"
+                }
+            }
+        }
+    }
+}
+
+PLAY RECAP *********************************************************************
+testhost                   : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+WARNING: Reviewing previous 1 warning(s):
+WARNING: Unable to determine context for the following test targets, they will be run on the target host: get_server
+
+
+
+Test Role Collection
+
+ansible-playbook roles/get_server_example_role/tests/test.yml -i roles/get_server_example_role/tests/inventory
+
+PLAY [Playing with Ansible and Git] ********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [include_role : namespace_example.collection_example.get_server_example_role] *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+TASK [namespace_example.collection_example.get_server_example_role : Example get information] **********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [namespace_example.collection_example.get_server_example_role : Debug info] ***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+ok: [localhost] => {
+    "msg": {
+        "changed": false,
+        "failed": false,
+        "hosts": {
+            "hosts": {
+                "arqopasr16.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c2",
+                    "environment_description": "Preproduccio",
+                    "host_environment": "pre",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "ARQOP",
+                    "system_description": "ARQUITECTURA OPERACIO"
+                },
+                "arqopasr19.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c1",
+                    "environment_description": "Preproduccio",
+                    "host_environment": "pre",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "ARQOP",
+                    "system_description": "ARQUITECTURA OPERACIO"
+                },
+                "arqopasr21.bank.es": {
+                    "affiliate": "BANK",
+                    "ansible_connection": "ssh",
+                    "ansible_host": "sgsinasp-b1.svb.bank.es",
+                    "ansible_user": "Pat",
+                    "business_group": "CXB",
+                    "center": "c1",
+                    "environment_description": "Desenvolupament / Test",
+                    "host_environment": "dsv",
+                    "security_zone": "mz",
+                    "step": 1,
+                    "system_code": "PAQFA",
+                    "system_description": "SERVIDORES PAQUETIZACION FACTORY"
+                }
+            }
+        }
+    }
+}
+
+TASK [namespace_example.collection_example.get_server_example_role : Write info in a file] *************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+ok: [localhost]
+
+PLAY RECAP *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

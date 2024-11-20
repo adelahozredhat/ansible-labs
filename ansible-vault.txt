@@ -1,0 +1,15 @@
+cd vault-example
+ansible-playbook playbook.yaml 
+
+cat vault.yaml
+cat vault-password
+ansible-vault encrypt -vault-pass-file "vault-password" vault.yaml
+cat vault.yaml
+
+ansible-playbook playbook.yaml
+
+ansible-playbook playbook.yaml --ask-vault-pass
+
+ansible-playbook playbook.yaml --vault-password-file  "vault-password"
+
+ansible-vault decrypt --vault-pass-file "vault-password" vault.yaml
