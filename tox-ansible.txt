@@ -1,0 +1,4 @@
+cd prueba_tox/ansible_collections/namespace_example/collection_example
+touch tox-ansible.ini
+tox list --ansible --conf tox-ansible.ini
+tox --ansible -p auto --conf tox-ansible.ini

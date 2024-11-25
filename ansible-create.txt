@@ -46,7 +46,7 @@ Ejemplo creacion proyecto inicial Colleccion.
 
 En el directorio raiz donde queramos crearlo
 
-mkdir ansible_collections/ansible_creator/ansible_creator_example_collection
+mkdir -p ansible_collections/ansible_creator/ansible_creator_example_collection
 cd ansible_collections/ansible_creator/ansible_creator_example_collection
 ansible-creator init collection ansible_creator.ansible_creator_example_collection
 

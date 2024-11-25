@@ -1,0 +1,56 @@
+---
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'vagrant'
+  provider:
+    name: 'virtualbox'
+platforms:
+  - name: 'moleculerhel8'
+    box: 'generic/rhel8'
+    instance_raw_config_args:
+      - "ssh.insert_key = true"
+      - 'registration.name = "moleculerhel8.local"'
+      - "registration.unregister_on_halt = false"
+      - "registration.username = ENV['EMAIL_REDHAT']"
+      - "registration.password = ENV['PASSWORD_REDHAT']"
+    memory: 4096
+    cpus: 2
+    interfaces:
+      # `network_name` is the required identifier, other keys map to arguments.
+      - network_name: public_network
+        ip: 192.168.0.100
+        hostname: true
+        bridge: eth0
+provisioner:
+  name: 'ansible'
+  inventory:
+    host_vars:
+      moleculerhel8cat:
+        ansible_user: 'vagrant'
+
+verifier:
+  name: 'ansible'
+
+# lint: |
+#   set -e
+#   yamllint -c ./molecule/linter/linters/.yamllint .
+#   ansible-lint -c ./molecule/linter/linters/.ansible-lint .
+
+scenario:
+  # lint_sequence:
+  #   - 'lint'
+  test_sequence:
+    # - 'dependency'
+    # - 'lint'
+    # - 'cleanup'
+    - 'destroy'
+    # - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    - 'idempotence'
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

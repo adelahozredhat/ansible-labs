@@ -1,0 +1,33 @@
+version: 3
+
+images:
+  base_image:
+    name: 'registry.redhat.io/ansible-automation-platform-24/de-minimal-rhel8:latest'
+
+additional_build_files:
+  - src: .vault_password
+    dest: configs
+
+additional_build_steps:
+  append_builder:
+    - ADD _build/configs/.vault_password /etc/.vault_password
+    - ENV EDA_VAULT_PASSWORD_FILE=/etc/.vault_password
+  append_final:
+    - ENV EDA_VAULT_PASSWORD_FILE=/etc/.vault_password
+
+dependencies:
+  galaxy:
+    collections:
+      - ansible.eda
+      - dynatrace.event_driven_ansible
+  python_interpreter:
+    python_path: "/usr/bin/python3"
+    package_system: "python3"
+  system:
+    - pkgconf-pkg-config
+    - systemd-devel
+    - gcc
+    - python39-devel
+
+options:
+  package_manager_path: /usr/bin/microdnf

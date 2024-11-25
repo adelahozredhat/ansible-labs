@@ -1,0 +1,48 @@
+---
+- name: Playbook to install Nginx and index webpage
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+
+    - name: Update
+      ansible.builtin.yum:
+        update_cache: true
+
+    - name: Install Nginx
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+
+    - name: Create directory for static content
+      ansible.builtin.file:
+        path: /var/www/html/hello-world
+        state: directory
+        mode: "0755"
+
+    - name: Create "index.html" file with "hello world" content
+      ansible.builtin.template:
+        src: "index.html.j2"
+        dest: /usr/share/nginx/html/index.html
+        mode: "0644"
+      notify:
+        - Restart nginx
+        - Open port
+        - Always reload firewalld
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+
+    - name: Open port
+      ansible.posix.firewalld:
+        port: 80/tcp
+        permanent: true
+        state: enabled
+
+    - name: Always reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded

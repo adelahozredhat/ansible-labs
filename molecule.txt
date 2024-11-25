@@ -1,0 +1,4 @@
+python3.9 -m pip install 'molecule-plugins[vagrant]'
+
+molecule init scenario --driver-name vagrant
+

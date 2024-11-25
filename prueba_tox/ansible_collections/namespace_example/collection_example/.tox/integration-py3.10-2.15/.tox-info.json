@@ -1,0 +1,6 @@
+{
+  "ToxEnv": {
+    "name": "integration-py3.10-2.15",
+    "type": "VirtualEnvRunner"
+  }
+}

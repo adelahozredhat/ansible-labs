@@ -1,0 +1,96 @@
+---
+- name: Execute Verification
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Make sure 'nginx' is started
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+      register: result
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "{{ result }}"
+      failed_when: result.state != "started"
+
+    - name: Check all port numbers are accessible from the current host
+      ansible.builtin.wait_for:
+        host: 192.168.0.100
+        port: 80
+        state: started         # Port should be open
+        delay: 0               # No wait before first check (sec)
+        timeout: 3             # Stop checking after timeout (sec)
+      ignore_errors: true
+      register: result
+      become: false
+      delegate_to: localhost
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "{{ result }}"
+      delegate_to: localhost
+      become: false
+      failed_when: result.state != "started"
+
+    - name: Delete content & directory
+      ansible.builtin.file:
+        state: absent
+        path: /tmp/check_index.html
+      delegate_to: localhost
+      become: false
+
+    - name: Download foo.conf
+      ansible.builtin.get_url:
+        url: http://192.168.0.100
+        dest: /tmp/check_index.html
+        mode: '0440'
+      delegate_to: localhost
+      become: false
+
+    - name: Get cksum of my First file
+      ansible.builtin.stat:
+        path: "/tmp/check_index.html"
+      register: myfirstfile
+      delegate_to: localhost
+      become: false
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "{{ myfirstfile }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Current SHA1
+      ansible.builtin.set_fact:
+        mf1sha1: "{{ myfirstfile.stat.checksum }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Get cksum of my Second File (If needed you can jump this)
+      ansible.builtin.stat:
+        path: "index.html"
+      register: mysecondfile
+      delegate_to: localhost
+      become: false
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "{{ mysecondfile }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Current SHA2
+      ansible.builtin.set_fact:
+        mf2sha1: "{{ mysecondfile.stat.checksum }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Compilation Changed
+      ansible.builtin.debug:
+        msg: "File Compare"
+      failed_when: mf2sha1 != mf1sha1
+      delegate_to: localhost
+      become: false

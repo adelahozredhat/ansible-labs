@@ -1,10 +1,4 @@
-mkdir -p ansible_collections/ansible_creator/ansible_creator_example_collection
-mv ansible_creator_example_collection ansible_collections/ansible_creator/ansible_creator_example_collection
-cd ansible_collections/ansible_creator/ansible_creator_example_collection
-
-ansible-galaxy collection install . -p ~/.ansible/collections --force
-
-ansible-test sanity
+cd collection_tests/template-ansible-collection-develop/ansible_collections/namespace_example/collection_example/
 
 [adelahoz@fedora collection_example]$ python3.9 -m pip list
 Package             Version
@@ -41,6 +35,9 @@ tomli               2.1.0
 urllib3             2.2.3
 wheel               0.45.0
 
+ansible-galaxy collection install . -p ~/.ansible/collections --force
+
+ansible-test sanity --python 3.9
 
 ansible-test sanity --python 3.9
 Running sanity test "action-plugin-docs"
@@ -76,7 +73,7 @@ Running sanity test "use-compat-six"
 Running sanity test "validate-modules"
 Running sanity test "yamllint"
 
-ansible-test units --python 3.9
+ansible-test units --python 3.9 --coverage
 Unit test controller with Python 3.9
 ============================= test session starts ==============================
 platform linux -- Python 3.9.19, pytest-8.3.3, pluggy-1.5.0
@@ -91,7 +88,7 @@ created: 16/16 workers
 ============================== 19 passed in 1.05s ==============================
 
 
-ansible-test integration --python 3.9
+ansible-test integration --python 3.9  --coverage
 WARNING: Unable to determine context for the following test targets, they will be run on the target host: get_server
 Running get_server integration test role
 
@@ -163,6 +160,25 @@ testhost                   : ok=3    changed=0    unreachable=0    failed=0    s
 WARNING: Reviewing previous 1 warning(s):
 WARNING: Unable to determine context for the following test targets, they will be run on the target host: get_server
 
+
+ansible-test coverage report
+
+Name                                                 Stmts   Miss Branch BrPart  Cover
+--------------------------------------------------------------------------------------
+plugins/module_utils/__init__.py                         0      0      0      0   100%
+plugins/module_utils/exceptions.py                       8      3      0      0    62%
+plugins/module_utils/haiinv.py                          53      3      6      0    95%
+plugins/modules/get_servers.py                          38      3      8      0    93%
+tests/unit/module_utils/test_haiinv_api.py             144      2      0      0    99%
+tests/unit/modules/commun_test.py                       21      0      0      0   100%
+tests/unit/modules/conftest.py                           9      0      0      0   100%
+tests/unit/modules/test_get_servers.py                  63      0      0      0   100%
+tests/unit/modules/test_integration_get_servers.py      17      0      0      0   100%
+--------------------------------------------------------------------------------------
+TOTAL                                                  353     11     14      0    97%
+
+
+ansible-test coverage html
 
 
 Test Role Collection

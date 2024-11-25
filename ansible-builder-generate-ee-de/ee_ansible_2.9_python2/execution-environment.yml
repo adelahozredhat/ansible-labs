@@ -1,0 +1,45 @@
+---
+version: 3
+
+build_arg_defaults:
+  ANSIBLE_GALAXY_CLI_COLLECTION_OPTS: '--pre'
+options:
+  package_manager_path: /usr/bin/microdnf
+  # skip_ansible_check: true
+
+
+additional_build_files:
+  - src: ansible.cfg
+    dest: configs
+  - src: requirements-pip2.txt
+    dest: configs
+
+additional_build_steps:
+  prepend_builder:
+    - RUN python3 -m pip uninstall -y ansible
+  append_builder:
+    - ADD _build/configs/ansible.cfg ~/.ansible.cfg
+    - ADD _build/configs/ansible.cfg /etc/ansible/ansible.cfg
+    - ADD _build/configs/requirements-pip2.txt /tmp/requirements-pip2.txt
+    - RUN python2 -m pip install -r /tmp/requirements-pip2.txt
+
+dependencies:
+
+  python_interpreter:
+    python_path: "/usr/bin/python3"
+    package_system: "python3"
+
+  system:
+    - gcc
+    - python2
+    - python2-pip
+    - pkgconfig
+    - python3-ethtool
+    - python3-dmidecode
+
+  python:
+    - ansible==2.9.27
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-24/ee-29-rhel8:latest

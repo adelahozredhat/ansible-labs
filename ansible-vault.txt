@@ -3,12 +3,14 @@ ansible-playbook playbook.yaml
 
 cat vault.yaml
 cat vault-password
-ansible-vault encrypt -vault-pass-file "vault-password" vault.yaml
+ansible-vault encrypt --vault-pass-file "vault-password" vault.yaml
 cat vault.yaml
 
 ansible-playbook playbook.yaml
 
 ansible-playbook playbook.yaml --ask-vault-pass
+
+// la password es prueba y se encuentra en el fichero vault-password
 
 ansible-playbook playbook.yaml --vault-password-file  "vault-password"
 

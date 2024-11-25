@@ -1,5 +1,0 @@
----
-- name: HandlerRun
-  debug:
-    msg: "Run handler"
-  listen: HandlerRun

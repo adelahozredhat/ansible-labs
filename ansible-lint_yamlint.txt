@@ -1,8 +1,8 @@
 cd ansible_creator_example_playbook
 yamllint .
-ansible-lint .
+ansible-lint
 
-cd ..
-cd ansible_creator_example_collection
+
+cd ansible_collections/ansible_creator/ansible_creator_example_collection
 yamllint .
-ansible-lint .
+ansible-lint 

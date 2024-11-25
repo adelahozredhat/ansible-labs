@@ -1,0 +1,6 @@
+{
+  "ToxEnv": {
+    "name": "sanity-py3.12-devel",
+    "type": "VirtualEnvRunner"
+  }
+}

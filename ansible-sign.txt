@@ -1,0 +1,101 @@
+cd playbook_tests
+
+gpg --list-keys
+# para exportar si tenemos una gpg --export --armour <key fingerprint> > my_public_key.asc
+gpg --list-public-keys
+gpg --list-secret-keys
+
+gpg --full-generate-key
+
+[adelahoz@MiWiFi-R3600-srv playbook_tests]$ gpg --full-generate-key
+gpg (GnuPG) 2.4.0; Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Por favor seleccione tipo de clave deseado:
+   (1) RSA and RSA
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+   (9) ECC (sign and encrypt) *default*
+  (10) ECC (sólo firmar)
+  (14) Existing key from card
+Su elección: 1
+las claves RSA pueden tener entre 1024 y 4096 bits de longitud.
+¿De qué tamaño quiere la clave? (3072) 
+El tamaño requerido es de 3072 bits
+Por favor, especifique el período de validez de la clave.
+         0 = la clave nunca caduca
+      <n>  = la clave caduca en n días
+      <n>w = la clave caduca en n semanas
+      <n>m = la clave caduca en n meses
+      <n>y = la clave caduca en n años
+¿Validez de la clave (0)? 
+La clave nunca caduca
+¿Es correcto? (s/n) s
+
+GnuPG debe construir un ID de usuario para identificar su clave.
+
+Nombre y apellidos: PRUEBA
+Dirección de correo electrónico: PRUEBA@PRUEBA.com
+Comentario: Prueba
+Ha seleccionado este ID de usuario:
+    "PRUEBA (Prueba) <PRUEBA@PRUEBA.com>"
+
+¿Cambia (N)ombre, (C)omentario, (D)irección o (V)ale/(S)alir? v
+Es necesario generar muchos bytes aleatorios. Es una buena idea realizar
+alguna otra tarea (trabajar en otra ventana/consola, mover el ratón, usar
+la red y los discos) durante la generación de números primos. Esto da al
+generador de números aleatorios mayor oportunidad de recoger suficiente
+entropía.
+Es necesario generar muchos bytes aleatorios. Es una buena idea realizar
+alguna otra tarea (trabajar en otra ventana/consola, mover el ratón, usar
+la red y los discos) durante la generación de números primos. Esto da al
+generador de números aleatorios mayor oportunidad de recoger suficiente
+entropía.
+gpg: certificado de revocación guardado como '/home/adelahoz/.gnupg/openpgp-revocs.d/221963AA017538D9B0C668227FF5615B44544D21.rev'
+claves pública y secreta creadas y firmadas.
+
+pub   rsa3072 2024-11-22 [SC]
+      221963AA017538D9B0C668227FF5615B44544D21
+uid                      PRUEBA (Prueba) <PRUEBA@PRUEBA.com>
+sub   rsa3072 2024-11-22 [E]
+
+# la paswwordp ara este caso es "prueba" la que hemos usado
+
+gpg --list-keys
+gpg: comprobando base de datos de confianza
+gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+gpg: nivel: 0  validez:   1  firmada:   0  confianza: 0-, 0q, 0n, 0m, 0f, 1u
+/home/adelahoz/.gnupg/pubring.kbx
+---------------------------------
+pub   rsa3072 2024-11-22 [SC]
+      221963AA017538D9B0C668227FF5615B44544D21
+uid        [  absoluta ] PRUEBA (Prueba) <PRUEBA@PRUEBA.com>
+sub   rsa3072 2024-11-22 [E]
+
+
+gpg --list-secret-keys
+/home/adelahoz/.gnupg/pubring.kbx
+---------------------------------
+sec   rsa3072 2024-11-22 [SC]
+      221963AA017538D9B0C668227FF5615B44544D21
+uid        [  absoluta ] PRUEBA (Prueba) <PRUEBA@PRUEBA.com>
+ssb   rsa3072 2024-11-22 [E]
+
+
+
+ansible-sign project gpg-sign .
+
+ansible-sign project gpg-verify .
+
+
+
+gpg --delete-secret-key PRUEBA
+
+gpg --delete-key PRUEBA
+
+[adelahoz@MiWiFi-R3600-srv playbook_tests]$ gpg --list-secret-keys
+gpg: comprobando base de datos de confianza
+gpg: no se encuentran claves absolutamente fiables
+[adelahoz@MiWiFi-R3600-srv playbook_tests]$ gpg --list-keys

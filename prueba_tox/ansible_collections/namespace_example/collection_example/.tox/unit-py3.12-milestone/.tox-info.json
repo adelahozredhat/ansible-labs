@@ -1,0 +1,6 @@
+{
+  "ToxEnv": {
+    "name": "unit-py3.12-milestone",
+    "type": "VirtualEnvRunner"
+  }
+}

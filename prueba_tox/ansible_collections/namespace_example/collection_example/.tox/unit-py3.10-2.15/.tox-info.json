@@ -1,0 +1,6 @@
+{
+  "ToxEnv": {
+    "name": "unit-py3.10-2.15",
+    "type": "VirtualEnvRunner"
+  }
+}
