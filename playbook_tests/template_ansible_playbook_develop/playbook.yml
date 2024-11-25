@@ -4,7 +4,6 @@
   become: true
   gather_facts: false
   tasks:
-
     - name: Update
       ansible.builtin.yum:
         update_cache: true

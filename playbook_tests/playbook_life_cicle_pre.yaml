@@ -101,6 +101,6 @@
       ansible.builtin.expect:
         command: ansible-sign project gpg-sign . -p 
         responses:
-          "GPG Key Passphrase:": "prueba"
+          "GPG Key Passphrase:": "PRUEBA"
       args:
         chdir: template_ansible_playbook_develop/

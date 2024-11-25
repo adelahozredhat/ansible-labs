@@ -1,10 +1,10 @@
-cd playbook_test
+cd playbook_tests
 
 ansible-playbook playbook_life_cicle_dev.yaml -vvv
 
 ansible-playbook playbook_life_cicle_pre.yaml -vvv
 
-cd collection_test
+cd collection_tests
 
 ansible-playbook collection_life_cicle_dev.yaml -vvv
 

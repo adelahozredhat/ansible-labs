@@ -1,0 +1,6 @@
+2024-11-25T16:04:51.217137+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' Image inspection failed, image assumed to be corrupted or missing
+2024-11-25T16:04:51.217474+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stdout: []
+
+2024-11-25T16:04:51.217531+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stderr: Error: ghcr.io/ansible/creator-ee:v0.18.0: image not known
+
+2024-11-25T16:05:15.230064+00:00 WARNING 'ansible_navigator.run' Dirty exit, killing the pid

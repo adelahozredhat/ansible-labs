@@ -1,4 +1,15 @@
+# los prerequisitos para poder ejecutar
+
 python3.9 -m pip install 'molecule-plugins[vagrant]'
 
 molecule init scenario --driver-name vagrant
 
+# exportar la variable de entorno de redhat para poder registrar la maquina rhel que crearemos
+
+export EMAIL_REDHAT=XXXX
+export PASSWORD_REDHAT=XXXX
+
+# Ejecucion
+
+cd playbook_tests/template_ansible_playbook_develop/
+molecule test

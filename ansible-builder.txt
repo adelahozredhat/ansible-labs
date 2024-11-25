@@ -1,0 +1,4 @@
+cd ansible-builder-generate-ee-de/ee_aap_2.4/
+ansible-builder create
+ansible-builder build --tag ee_aap_2.4
+podman images

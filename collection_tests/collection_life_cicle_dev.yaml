@@ -63,6 +63,13 @@
       debug:
         msg: '{{xmlresp.matches[0].coverage["line-rate"]}}'
 
+    - name: Ansible execute role test
+      ansible.builtin.shell: ansible-playbook roles/get_server_example_role/tests/test.yml -i roles/get_server_example_role/tests/inventory
+      args:
+        chdir: template-ansible-collection-develop/ansible_collections/namespace_example/collection_example/
+      register: role_test_result
+      ignore_errors: true
+
     - name: Errors checks
       ansible.builtin.fail:
         msg: 
@@ -71,8 +78,9 @@
           - "{{ 'Fallo en el AnsibleTest Sanity, por favor reviselo' if ansibletest_sanity_result.failed }}"
           - "{{ 'Fallo en el AnsibleTest Units, por favor reviselo' if ansibletest_units_result.failed }}"
           - "{{ 'Fallo en el AnsibleTest Integration, por favor reviselo' if ansibletest_integration_result.failed }}" 
-          - "{{ 'Fallo la cobertura de codigo es menor del 0.90' if xmlresp.matches[0].coverage['line-rate']>0.9 }}" 
-      when: yamllint_result.failed or ansiblelint_result.failed or ansibletest_sanity_result.failed or ansibletest_units_result.failed or ansibletest_integration_result.failed
+          - "{{ 'Fallo la cobertura de codigo es menor del 0.90' if xmlresp.matches[0].coverage['line-rate']<0.9 }}"
+          - "{{ 'Fallo en la ejecución del test del role de la collection' if role_test_result.failed }}" 
+      when: yamllint_result.failed or ansiblelint_result.failed or ansibletest_sanity_result.failed or ansibletest_units_result.failed or ansibletest_integration_result.failed or xmlresp.matches[0].coverage['line-rate']|float<0.9 or role_test_result.failed
 
     - name: Ejecucion correcta
       ansible.builtin.debug:

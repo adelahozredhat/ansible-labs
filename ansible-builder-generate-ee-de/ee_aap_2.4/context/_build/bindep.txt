@@ -1,0 +1,3 @@
+gcc
+python39-devel
+openldap-devel
