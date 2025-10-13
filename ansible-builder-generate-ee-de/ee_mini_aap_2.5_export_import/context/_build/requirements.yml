@@ -1,0 +1,13 @@
+collections:
+- ansible.hub
+- infra.controller_configuration
+- ansible.controller
+- ansible.eda
+- infra.eda_configuration
+- infra.aap_configuration
+- infra.aap_configuration_extended
+- infra.aap_utilities
+- infra.ee_utilities
+- ansible.posix
+- kubernetes.core
+- redhat.openshift

@@ -1,0 +1,84 @@
+---
+version: 3
+
+build_arg_defaults:
+  ANSIBLE_GALAXY_CLI_COLLECTION_OPTS: '--pre'
+
+options:
+  package_manager_path: /usr/bin/microdnf
+
+dependencies:
+  ansible_core:
+    package_pip: ansible-core
+  ansible_runner:
+    package_pip: ansible-runner
+  python_interpreter:
+    python_path: "/usr/bin/python3"
+    package_system: "python3"
+
+  galaxy:
+    collections:
+      # - ansible.platform
+      # https://galaxy.ansible.com/ui/repo/published/ansible/hub/
+      - ansible.hub
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/controller_configuration/
+      - infra.controller_configuration
+      # https://console.redhat.com/ansible/automation-hub/repo/published/ansible/controller/
+      - ansible.controller
+      # https://galaxy.ansible.com/ui/repo/published/ansible/eda/
+      # https://console.redhat.com/ansible/automation-hub/repo/published/ansible/eda/
+      - ansible.eda
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/eda_configuration/
+      - infra.eda_configuration
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/aap_configuration/
+      - infra.aap_configuration
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/aap_configuration_extended/
+      - infra.aap_configuration_extended
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/aap_utilities/
+      - infra.aap_utilities
+      # https://console.redhat.com/ansible/automation-hub/repo/validated/infra/ee_utilities/
+      - infra.ee_utilities
+      # https://console.redhat.com/ansible/automation-hub/repo/published/ansible/posix/
+      - ansible.posix
+      # https://console.redhat.com/ansible/automation-hub/repo/published/kubernetes/core/
+      - kubernetes.core
+      # https://console.redhat.com/ansible/automation-hub/repo/published/redhat/openshift/
+      - redhat.openshift  
+      # - galaxy.galaxy
+
+  system:
+    - systemd-devel
+    - python3-devel 
+    - libxml2-devel 
+    - libxslt-devel 
+    - gcc
+    - python3
+  #   - openldap-devel
+
+  python:
+    - ansible-core
+    - ansible-runner
+    - ansible-lint
+    - yamllint
+    - ansible-sign
+  #   - python-ldap==3.4.4
+  #   - XlsxWriter==3.2.0
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-25/ee-minimal-rhel9:latest
+
+additional_build_steps:
+  prepend_galaxy:
+    - ENV ANSIBLE_GALAXY_SERVER_LIST=automation_hub_certified,upstream_galaxy
+    - ENV ANSIBLE_GALAXY_SERVER_UPSTREAM_GALAXY_URL=https://galaxy.ansible.com/
+    - ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_CERTIFIED_URL=https://aap-aap.apps.cluster-fjnql-1.dynamic.redhatworkshops.io/api/galaxy/content/rh-certified/
+    - ENV ANSIBLE_GALAXY_CLI_COLLECTION_OPTS=-c
+    - ENV ANSIBLE_GALAXY_IGNORE=1
+    #  - ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_CERTIFIED_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+    - ARG ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_CERTIFIED_TOKEN
+  prepend_builder:
+    - RUN python3 -m pip install --upgrade pip
+
+# options:
+#   skip_ansible_check: true
