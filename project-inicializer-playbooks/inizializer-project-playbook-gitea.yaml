@@ -1,0 +1,231 @@
+---
+# Título: Playbook para crear un nuevo repositorio, su webhook y notificar
+# Ejecutable desde AAP/AWX
+- name: Crear nuevo repositorio, webhook y notificar
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    # --- Variables de Entrada (Asumidas para AWX/AAP) ---
+    # Parámetros de Repositorio
+    # usuario: "mi_usuario"
+    # grupo: "mi_org"
+    # descripcion: "Descripción del nuevo repositorio"
+    # repo_base: "mi-template-repo"
+    # repo_nuevo: "mi-nuevo-proyecto"
+    # tipo_repositorio: "github" | "gitlab" | "gitea"
+    # host_repositorio: "api.github.com" | "gitlab.com" | "gitea.miempresa.com"
+    # token_repositorio: "..." # Token de Acceso al Repositorio
+
+    # Parámetros de Webhook (¡NUEVOS!)
+    webhook_url: "https://ci.miempresa.com/webhook/handle"
+    webhook_secret: "un-secreto-seguro"
+    webhook_events: ["push", "pull_request"] # Eventos comunes
+
+    # Parámetros de Comunicación (Email/Slack)
+    # email_destinatario: "equipo@miempresa.com"
+    # slack_channel: "#notificaciones-repos"
+    # slack_api_token: "xoxb-..." 
+    # smtp_host: "smtp.miempresa.com"
+    # smtp_user: "automation@miempresa.com"
+    # smtp_password: "..."
+
+    # Rutas y URLs
+    local_path: "/tmp/{{ repo_nuevo }}_clone"
+    clone_url_base: "https://{{ token_repositorio }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_base }}.git"
+    clone_url_nuevo: "https://{{ token_repositorio }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_nuevo }}.git"
+    repo_final_url: ""
+
+  tasks:
+
+    # =========================================================================
+    # 1. Tareas de Creación de Repositorio y Webhook (GitHub)
+    # =========================================================================
+    - name: 1.1 Crear repositorio en GitHub desde plantilla
+      community.general.github_repo:
+        api_url: "https://{{ host_repositorio }}"
+        api_token: "{{ token_repositorio }}"
+        name: "{{ repo_nuevo }}"
+        organization: "{{ grupo }}"
+        state: "present"
+        description: "{{ descripcion }}"
+        template_repository: "{{ grupo }}/{{ repo_base }}"
+      when: tipo_repositorio == 'github'
+      register: github_result
+
+    - name: 1.2 Crear Webhook en GitHub
+      community.general.github_webhook:
+        api_url: "https://{{ host_repositorio }}"
+        token: "{{ token_repositorio }}"
+        repo: "{{ grupo }}/{{ repo_nuevo }}"
+        url: "{{ webhook_url }}"
+        secret: "{{ webhook_secret }}"
+        events: "{{ webhook_events }}"
+        content_type: "json"
+        ssl_verification: yes
+        state: present
+      when: tipo_repositorio == 'github' and github_result is succeeded
+
+    - name: 1.3 Establecer URL final para GitHub
+      ansible.builtin.set_fact:
+        repo_final_url: "{{ github_result.repository.html_url }}"
+      when: tipo_repositorio == 'github' and github_result is succeeded
+
+    # =========================================================================
+    # 2. Tareas de Creación de Repositorio y Webhook (GitLab)
+    # =========================================================================
+    - name: 2.1 Crear repositorio en GitLab desde plantilla
+      community.general.gitlab_project:
+        api_url: "https://{{ host_repositorio }}"
+        api_token: "{{ token_repositorio }}"
+        name: "{{ repo_nuevo }}"
+        path_with_namespace: "{{ grupo }}/{{ repo_nuevo }}"
+        state: "present"
+        description: "{{ descripcion }}"
+        template_project: "{{ grupo }}/{{ repo_base }}"
+      when: tipo_repositorio == 'gitlab'
+      register: gitlab_result
+
+    - name: 2.2 Crear Webhook en GitLab
+      community.general.gitlab_hook:
+        api_url: "https://{{ host_repositorio }}"
+        api_token: "{{ token_repositorio }}"
+        project_id: "{{ grupo }}/{{ repo_nuevo }}"
+        url: "{{ webhook_url }}"
+        # GitLab usa 'token' para el secreto, no 'secret'
+        token: "{{ webhook_secret }}" 
+        push_events: true # Simplificado, asumiendo push es el evento principal
+        merge_requests_events: true
+        enable_ssl_verification: yes
+        state: present
+      when: tipo_repositorio == 'gitlab' and gitlab_result is succeeded
+
+    - name: 2.3 Establecer URL final para GitLab
+      ansible.builtin.set_fact:
+        repo_final_url: "{{ gitlab_result.project.web_url }}"
+      when: tipo_repositorio == 'gitlab' and gitlab_result is succeeded
+
+    # =========================================================================
+    # 3. Tareas de Creación de Repositorio y Webhook (Gitea)
+    # =========================================================================
+
+    - name: 3.1 Crear el nuevo repositorio vacío en Gitea (API)
+      ansible.builtin.uri:
+        url: "https://{{ host_repositorio }}/api/v1/user/repos"
+        method: POST
+        headers:
+          Authorization: "token {{ token_repositorio }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "{{ repo_nuevo }}"
+          description: "{{ descripcion }}"
+          owner: "{{ grupo }}"
+          private: false
+        status_code: [201]
+      when: tipo_repositorio == 'gitea'
+      register: gitea_create_result
+
+    - name: 3.2 Establecer URL final para Gitea
+      ansible.builtin.set_fact:
+        repo_final_url: "{{ gitea_create_result.json.html_url }}"
+      when: tipo_repositorio == 'gitea' and gitea_create_result is succeeded
+
+    - name: 3.3 Crear Webhook en Gitea (API)
+      ansible.builtin.uri:
+        url: "https://{{ host_repositorio }}/api/v1/repos/{{ grupo }}/{{ repo_nuevo }}/hooks"
+        method: POST
+        headers:
+          Authorization: "token {{ token_repositorio }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          type: "gitea" # Tipo de webhook estándar en Gitea
+          config:
+            url: "{{ webhook_url }}"
+            content_type: "json"
+            secret: "{{ webhook_secret }}"
+            insecure_ssl: "0" # "0" para verificar SSL, "1" para no verificar
+          events: "{{ webhook_events }}"
+          active: true
+        status_code: [201]
+      when: tipo_repositorio == 'gitea' and gitea_create_result is succeeded
+
+    # --- CLONACIÓN Y PUSH DEL CONTENIDO PARA GITEA ---
+    - name: 3.4 Clonar el repositorio base localmente
+      ansible.builtin.git:
+        repo: "{{ clone_url_base }}"
+        dest: "{{ local_path }}"
+        version: master
+        clone: yes
+        update: yes
+      when: tipo_repositorio == 'gitea' and repo_final_url is defined
+
+    - name: 3.5 Eliminar el directorio .git del clon para un nuevo historial
+      ansible.builtin.file:
+        path: "{{ local_path }}/.git"
+        state: absent
+      when: tipo_repositorio == 'gitea' and repo_final_url is defined
+
+    - name: 3.6 Inicializar nuevo repositorio Git, agregar contenido y commit
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ local_path }}"
+      loop:
+        - git init
+        - git add .
+        - git commit -m 'Initial commit from template {{ repo_base }}'
+      when: tipo_repositorio == 'gitea' and repo_final_url is defined
+
+    - name: 3.7 Añadir remoto y enviar el contenido al nuevo repositorio
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ local_path }}"
+      loop:
+        - git remote add origin {{ clone_url_nuevo }}
+        - git push -u origin master
+      when: tipo_repositorio == 'gitea' and repo_final_url is defined
+
+    - name: 3.8 Limpiar el directorio temporal
+      ansible.builtin.file:
+        path: "{{ local_path }}"
+        state: absent
+      when: tipo_repositorio == 'gitea' and repo_final_url is defined
+
+
+    # =========================================================================
+    # 4. Tareas de Comunicación
+    # =========================================================================
+
+    - name: 4.1 ENVIAR NOTIFICACIÓN POR EMAIL (ansible.builtin.mail)
+      ansible.builtin.mail:
+        host: "{{ smtp_host }}"
+        port: 587
+        username: "{{ smtp_user }}"
+        password: "{{ smtp_password }}"
+        to: "{{ email_destinatario }}"
+        subject: "✅ Repositorio Creado [{{ tipo_repositorio | upper }}]: {{ repo_nuevo }}"
+        body: |
+          Hola,
+
+          Se ha completado la creación automatizada de un nuevo repositorio.
+          También se ha configurado el webhook para la URL: {{ webhook_url }}
+
+          - Nombre del Repositorio: {{ repo_nuevo }}
+          - Creado a partir de: {{ repo_base }}
+          - Plataforma: {{ tipo_repositorio | upper }}
+          - URL de Acceso: {{ repo_final_url }}
+
+          Saludos,
+          Plataforma de Automatización AWX/AAP
+      when: repo_final_url is defined and repo_final_url != "" and smtp_host is defined
+
+    - name: 4.2 ENVIAR NOTIFICACIÓN POR SLACK (community.general.slack)
+      community.general.slack:
+        token: "{{ slack_api_token }}"
+        channel: "{{ slack_channel }}"
+        msg: "🚀 *Nuevo Repositorio Creado en {{ tipo_repositorio | upper }}*\n- *Nombre:* `{{ repo_nuevo }}`\n- *Webhook:* Configurado para `{{ webhook_url }}`\n- *URL:* <{{ repo_final_url }}|Abrir Repositorio>"
+        username: "AWX Automation"
+        icon_emoji: ":rocket:"
+      when: repo_final_url is defined and repo_final_url != "" and slack_api_token is defined

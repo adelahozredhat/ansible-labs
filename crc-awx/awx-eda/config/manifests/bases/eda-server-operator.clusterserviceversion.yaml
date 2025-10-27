@@ -1,0 +1,874 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: eda-server-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Back up a deployment of the eda, including jobs, inventories, and
+        credentials
+      displayName: EDA Backup
+      kind: EDABackup
+      name: edabackups.eda.ansible.com
+      specDescriptors:
+      - displayName: Deployment Name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup Persistent Volume Claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup Persistent Volume Claim Namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Backup PVC Storage Requirements
+        path: backup_storage_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup Management Pod Resource Requirements
+        path: backup_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Backup PVC Storage Class
+        path: backup_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Database Backup Label Selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Scale down deployments to put EDA into an idle state
+        displayName: Idle EDA
+        path: idle_deployment
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: No Log Configuration
+        path: no_log
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Disable UI (Headless EDA including only API endpoints)
+        path: ui_disabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Clean up backup when EDABackup is deleted
+        path: clean_backup_on_delete
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Extra flags for pg_dump when backing up the database
+        path: pg_dump_suffix
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on EDA resource
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - description: Persistent volume claim name used during backup
+        displayName: Backup Claim
+        path: backupClaim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The directory that data is backed up to on the PVC
+        displayName: Backup Directory
+        path: backupDirectory
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The resulting conditions when a Service Telemetry is instantiated
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+        properties:
+          lastTransitionTime:
+            type: string
+          reason:
+            type: string
+          status:
+            type: string
+          type:
+            type: string
+          ansibleResult:
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+      version: v1alpha1
+    - description: Restore a previous eda deployment from an EDABackup. The deployment
+        name you provide will be the name of the new EDA CR that will be created.
+      displayName: EDA Restore
+      kind: EDARestore
+      name: edarestores.eda.ansible.com
+      specDescriptors:
+      - description: Select what type of backup to specify. Backup CR, allows you
+          to specify the name of an EDABackup object (recommended approach).  The
+          PVC option allows you to specify a custom PVC and directory to backup from.
+        displayName: Backup Source to restore from
+        path: backup_source
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:CR
+        - urn:alm:descriptor:com.tectonic.ui:select:PVC
+      - displayName: Backup Name
+        path: backup_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:CR
+      - displayName: New Deployment Name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup Persistent Volume Claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Backup Namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: This is the directory inside the PVC that your backup is stored
+          in.
+        displayName: Backup Directory
+        path: backup_dir
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Postgres Restore Label Selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Custom cluster name
+        path: cluster_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: EDA Spec Overrides
+        path: spec_overrides
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Restore Management Pod Resource Requirements
+        path: restore_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: No Log Configuration
+        path: no_log
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on EDA resource
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - description: The state of the restore
+        displayName: Restore Status
+        path: restoreComplete
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The resulting conditions when a Service Telemetry is instantiated
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+        properties:
+          lastTransitionTime:
+            type: string
+          reason:
+            type: string
+          status:
+            type: string
+          type:
+            type: string
+          ansibleResult:
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+      version: v1alpha1
+    - description: Deploy a new instance of Event-Driven Ansible Server. A standardized
+        way to configure and run rulebooks to trigger automation.
+      displayName: EDA
+      kind: EDA
+      name: edas.eda.ansible.com
+      specDescriptors:
+      - displayName: Public Base URL
+        path: public_base_url
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Automation Server URL
+        path: automation_server_url
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Automation Server SSL Verify
+        path: automation_server_ssl_verify
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Hostname
+        path: hostname
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Admin Account Username
+        path: admin_user
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Admin Password Secret
+        path: admin_password_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Name of the k8s secret the DB fields encryption key is stored
+          in.
+        displayName: DB Fields Encryption Key
+        path: db_fields_encryption_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: No Log Configuration
+        path: no_log
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Additional labels defined on the resource, which should be propagated
+          to child resources
+        path: additional_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
+      - displayName: Image Pull Secrets
+        path: image_pull_secrets
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Extra Settings
+        path: extra_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Database configuration
+        path: database
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: External database configuration secret
+        path: database.database_secret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Database resource requirements
+        path: database.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: Define Database storage requirements
+        displayName: Database Storage Requirements
+        path: database.storage_requirements
+      - description: 'Configure PostgreSQL connection sslmode option. Default: "prefer"'
+        displayName: Database SSLMode
+        path: database.postgres_ssl_mode
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Name of the StorageClass required by the claim.
+        displayName: Database Storage Class
+        path: database.postgres_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Database Extra Arguments (Deprecated)
+        path: database.postgres_extra_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Database Extra Settings
+        path: postgres_extra_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Database Selector
+        path: database.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Database Tolerations
+        path: database.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Database Priority Class
+        path: database.priority_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Should PostgreSQL data for managed databases be kept after upgrades?
+        path: database.postgres_keep_pvc_after_upgrade
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: API Image
+        path: image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: API Image Version
+        path: image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: UI Image
+        path: image_web
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: UI Image Version
+        path: image_web_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Image
+        path: redis_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Image Version
+        path: redis_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Defines desired state of eda-api deployment resources
+        displayName: API deployment configuration
+        path: api
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The number of gunicorn workers for the API.
+        displayName: Gunicorn API workers
+        path: api.gunicorn_workers
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: API server resource requirements
+        path: api.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of API replicas.
+        displayName: Replicas
+        path: api.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: api.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: api.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the api pods.
+        displayName: Tolerations
+        path: api.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: api.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of eda-event-stream deployment resources
+        displayName: Webhook deployment configuration
+        path: event_stream
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Webhook custom prefix path
+        displayName: Webhook prefix path
+        path: prefix
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The number of gunicorn workers for the Webhook.
+        displayName: Gunicorn Webhook workers
+        path: event_stream.gunicorn_workers
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: Webhook server resource requirements
+        path: event_stream.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of Webhook replicas.
+        displayName: Replicas
+        path: event_stream.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: event_stream.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: event_stream.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the event_stream pods.
+        displayName: Tolerations
+        path: event_stream.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: event_stream.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of eda-ui deployment resources
+        displayName: UI deployment configuration
+        path: ui
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: UI pod resource requirements
+        path: ui.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of eda-ui replicas.
+        displayName: Replicas
+        path: ui.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: ui.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: ui.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the UI pods.
+        displayName: Tolerations
+        path: ui.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: ui.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of eda-default-worker deployment resources
+        displayName: (Deprecated) Default worker deployment configuration
+        path: worker
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Defines desired state of eda-default-worker deployment resources
+        displayName: Default worker deployment configuration
+        path: default_worker
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Default worker pod resource requirements
+        path: default_worker.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of default worker replicas.
+        displayName: Replicas
+        path: default_worker.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: default_worker.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: default_worker.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the default worker pods.
+        displayName: Tolerations
+        path: default_worker.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: default_worker.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of eda-activation-worker deployment resources
+        displayName: Activation worker deployment configuration
+        path: activation_worker
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Activation worker pod resource requirements
+        path: activation_worker.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of activation worker replicas.
+        displayName: Replicas
+        path: activation_worker.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: activation_worker.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: activation_worker.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the activation worker pods.
+        displayName: Tolerations
+        path: activation_worker.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: activation_worker.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of eda-scheduler deployment resources
+        displayName: Scheduler deployment configuration
+        path: scheduler
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: scheduler pod resource requirements
+        path: scheduler.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: The number of scheduler replicas.
+        displayName: Replicas
+        path: scheduler.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: scheduler.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: The deployment strategy to use to replace existing pods with
+          new ones.
+        displayName: Strategy
+        path: scheduler.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Node tolerations for the scheduler pods.
+        displayName: Tolerations
+        path: scheduler.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Topology rule(s) for the pods.
+        displayName: Topology Spread Constraints
+        path: scheduler.topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Defines desired state of redis deployment resources
+        displayName: Redis deployment configuration
+        path: redis
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: External redis configuration secret
+        path: redis.redis_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: The number of redis replicas.
+        displayName: Replicas
+        path: redis.replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - displayName: Node Selector
+        path: redis.node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Deployment strategy to use to replace existing pods with new
+          ones.
+        displayName: Strategy
+        path: redis.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:updateStrategy
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Redis deployment resource requirements
+        path: redis.resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: Node tolerations for the Redis pods.
+        displayName: Tolerations
+        path: redis.tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Service Type
+        path: service_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:ClusterIP
+        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
+        - urn:alm:descriptor:com.tectonic.ui:select:NodePort
+      - displayName: Ingress Type
+        path: ingress_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:none
+        - urn:alm:descriptor:com.tectonic.ui:select:Ingress
+        - urn:alm:descriptor:com.tectonic.ui:select:Route
+      - displayName: Ingress Class Name
+        path: ingress_class_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress API Version
+        path: ingress_api_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Path
+        path: ingress_path
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress Path Type
+        path: ingress_path_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress Annotations
+        path: ingress_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress TLS Secret
+        path: ingress_tls_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: LoadBalancer Protocol
+        path: loadbalancer_protocol
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:http
+        - urn:alm:descriptor:com.tectonic.ui:select:https
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: LoadBalancer Port
+        path: loadbalancer_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Route API Version
+        path: route_api_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Route DNS host
+        path: route_host
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Route TLS Termination Mechanism
+        path: route_tls_termination_mechanism
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:Edge
+        - urn:alm:descriptor:com.tectonic.ui:select:Passthrough
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Route TLS Credential Secret
+        path: route_tls_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Nodeport Port
+        path: nodeport_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:NodePort
+      - description: Secret where the trusted Certificate Authority Bundle is stored
+        displayName: Bundle CA Cert Secret
+        path: bundle_cacert_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Service Account Annotations
+        path: service_account_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Disable IPv6 listener?
+        path: ipv6_disabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on EDA resource
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Force drop database before restore
+        path: force_drop_db
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      statusDescriptors:
+      - description: Admin password for the instance deployed
+        displayName: Admin Password
+        path: adminPasswordSecret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Admin user for the instance deployed
+        displayName: Admin User
+        path: adminUser
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Database Configuration secret name of the deployed instance
+        displayName: Database Configuration
+        path: databaseConfigurationSecret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Database Fields Encryption secret name of the deployed instance
+        displayName: Database Fields Encryption
+        path: dbFieldsEncryptionSecret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Image of the instance deployed
+        displayName: Image
+        path: image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Version of the instance deployed
+        displayName: Version
+        path: version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Route to access the instance deployed
+        displayName: URL
+        path: URL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: The resulting conditions when a Service Telemetry is instantiated
+        displayName: Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+        properties:
+          lastTransitionTime:
+            type: string
+          reason:
+            type: string
+          status:
+            type: string
+          type:
+            type: string
+          ansibleResult:
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+      version: v1alpha1
+  description: |
+    An ansible operator for managing the lifecycle of an Event-Driven Ansible
+    Server. EDA Server is a console for configuring and managing your automation
+    rulebooks.
+  displayName: Event-Driven Ansible Server
+  icon:
+  - base64data: PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMzIgMzIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGw6I0ZGRkZGRjt9Cgkuc3Qxe2ZpbGw6IzFCNjZCNjt9Cgkuc3Qye2ZpbGw6I0VGNUE1NDt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGNpcmNsZSBjbGFzcz0ic3QwIiBjeD0iMTYuMTEiIGN5PSIxNi4yNyIgcj0iMTEuMjkiLz4KCTwvZz4KCTxnIGlkPSJYTUxJRF8wMDAwMDAyNjg3NzE2NjMwODAwNjA4MzkwMDAwMDAwODM2NjI1MzA5MTI0OTMzMTg1M18iPgoJCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNC45MiwzMS41Yy0wLjg0LDAtMS41NS0wLjYzLTEuNjUtMS40NmwtMC4xMi0wLjcxYy0xLjU0LTAuMzQtMi45LTAuODktNC4xMy0xLjY4bC0wLjY4LDAuNDkKCQkJYy0wLjI3LDAuMjItMC42NCwwLjM0LTEuMDEsMC4zNGMtMC40NCwwLTAuODYtMC4xNy0xLjE3LTAuNDlMNC42OCwyNi41Yy0wLjU5LTAuNTktMC42NS0xLjU0LTAuMTMtMi4ybDAuNDQtMC42MgoJCQljLTAuOTQtMS40MS0xLjU5LTIuOTUtMS45NC00LjYxbC0wLjcxLTAuMTJjLTAuODEtMC4xLTEuNDQtMC44MS0xLjQ0LTEuNjR2LTIuMTFjMC0wLjg0LDAuNjMtMS41NSwxLjQ2LTEuNjVsMC43LTAuMTEKCQkJYzAuMzQtMS41OCwwLjk2LTMuMDcsMS44NC00LjQzTDQuNTMsOC41MmMtMC41LTAuNjQtMC40NS0xLjU5LDAuMTUtMi4xOGwxLjQ5LTEuNDlDNi40OCw0LjUzLDYuOSw0LjM2LDcuMzQsNC4zNgoJCQljMC4zNywwLDAuNzMsMC4xMywxLjAyLDAuMzVsMC40OSwwLjM1YzEuMzItMC44NiwyLjc2LTEuNDcsNC4zLTEuODJsMC4xMy0wLjc3YzAuMS0wLjgxLDAuODEtMS40NCwxLjY1LTEuNDRoMi4xMQoJCQljMC44NCwwLDEuNTUsMC42MywxLjY1LDEuNDZsMC4xMSwwLjY4YzEuNjYsMC4zMywzLjIxLDAuOTcsNC42MiwxLjg5bDAuNTItMC4zN2MwLjI3LTAuMjIsMC42NC0wLjM0LDEuMDEtMC4zNAoJCQljMC40NCwwLDAuODYsMC4xNywxLjE3LDAuNDlsMS40OSwxLjQ5YzAuNTksMC41OSwwLjY1LDEuNTQsMC4xMywyLjJsLTAuMzcsMC41MWMwLjg4LDEuMzYsMS40OSwyLjg0LDEuODMsNC40MWwwLjY5LDAuMTEKCQkJYzAuODEsMC4xLDEuNDQsMC44MSwxLjQ0LDEuNjV2Mi4xMWMwLDAuODQtMC42MywxLjU1LTEuNDYsMS42NWwtMC42NiwwLjExYy0wLjM1LDEuNjQtMSwzLjE4LTEuOTMsNC41OWwwLjQ3LDAuNjYKCQkJYzAuNTEsMC42NCwwLjQ1LDEuNTktMC4xNCwyLjE4TDI2LjEyLDI4Yy0wLjMxLDAuMzEtMC43MywwLjQ5LTEuMTcsMC40OWwwLDBjLTAuMzcsMC0wLjczLTAuMTMtMS4wMi0wLjM1bC0wLjY3LTAuNDgKCQkJYy0xLjMyLDAuODYtMi43NiwxLjQyLTQuNDYsMS43NWwtMC4xMSwwLjY2Yy0wLjEsMC44MS0wLjgxLDEuNDQtMS42NSwxLjQ0SDE0LjkyeiBNMTYuMTMsNS45M2MtNS43MSwwLTEwLjM2LDQuNjUtMTAuMzYsMTAuMzYKCQkJczQuNjUsMTAuMzYsMTAuMzYsMTAuMzZTMjYuNDksMjIsMjYuNDksMTYuMjlTMjEuODQsNS45MywxNi4xMyw1LjkzeiIvPgoJCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy4wMywxLjU0YzAuNTksMCwxLjA4LDAuNDQsMS4xNSwxLjAybDAuMTcsMS4wNWMxLjg2LDAuMzIsMy41OCwxLjA1LDUuMDcsMi4wOGwwLjgtMC41OAoJCQljMC4yMS0wLjE3LDAuNDYtMC4yNSwwLjcyLTAuMjVjMC4zLDAsMC42LDAuMTEsMC44MiwwLjM0bDEuNDksMS40OWMwLjQxLDAuNDEsMC40NSwxLjA3LDAuMDksMS41NGwtMC41OCwwLjgxCgkJCWMwLjk4LDEuNDQsMS42OCwzLjA4LDIuMDEsNC44NmwxLjAzLDAuMTdjMC41OCwwLjA3LDEuMDIsMC41NiwxLjAyLDEuMTV2Mi4xMWMwLDAuNTktMC40NCwxLjA4LTEuMDIsMS4xNWwtMS4wMiwwLjE3CgkJCWMtMC4zNCwxLjg1LTEuMDgsMy41NS0yLjExLDUuMDNsMC42OCwwLjk0YzAuMzYsMC40NiwwLjMyLDEuMTItMC4wOSwxLjU0bC0xLjQ5LDEuNDljLTAuMjMsMC4yMy0wLjUyLDAuMzQtMC44MiwwLjM0CgkJCWMtMC4yNSwwLTAuNS0wLjA4LTAuNzItMC4yNWwtMC45Ni0wLjY5bC0wLjAyLTAuMDFjLTEuNDksMS4wMy0zLjA1LDEuNjEtNC45LDEuOTNsLTAuMTYsMS4wMUMxOC4xMSwzMC41NiwxNy42MiwzMSwxNy4wMywzMQoJCQloLTIuMTFjLTAuNTksMC0xLjA4LTAuNDQtMS4xNS0xLjAybC0wLjE3LTEuMDdjLTEuNy0wLjM0LTMuMi0wLjkzLTQuNTgtMS44N2wtMC45NiwwLjY5Yy0wLjIxLDAuMTctMC40NiwwLjI1LTAuNzIsMC4yNQoJCQljLTAuMywwLTAuNi0wLjExLTAuODItMC4zNGwtMS40OS0xLjQ5Yy0wLjQxLTAuNDEtMC40NS0xLjA3LTAuMDktMS41NEw1LjYsMjMuN2MtMS4wNS0xLjQ4LTEuNzktMy4yLTIuMTMtNS4wNWwtMS4wNS0wLjE3CgkJCUMxLjgzLDE4LjQsMS40LDE3LjkxLDEuNCwxNy4zMnYtMi4xMWMwLTAuNTksMC40NC0xLjA4LDEuMDItMS4xNWwxLjA2LTAuMTdjMC4zNC0xLjc4LDEuMDQtMy40MywyLjAzLTQuODdMNC45NCw4LjIzCgkJCUM0LjU4LDcuNzcsNC42Miw3LjExLDUuMDMsNi42OUw2LjUyLDUuMmMwLjIzLTAuMjMsMC41Mi0wLjM0LDAuODItMC4zNGMwLjI1LDAsMC41LDAuMDgsMC43MiwwLjI1bDAuNzksMC41NwoJCQljMS40MS0wLjk3LDMuMDEtMS42Niw0Ljc1LTIuMDFsMC4xOC0xLjExYzAuMDctMC41OCwwLjU2LTEuMDIsMS4xNS0xLjAySDE3LjAzIE0xNi4xMywyNy4xNWM2LDAsMTAuODYtNC44NiwxMC44Ni0xMC44NgoJCQlTMjIuMTMsNS40MywxNi4xMyw1LjQzUzUuMjcsMTAuMjksNS4yNywxNi4yOVMxMC4xMywyNy4xNSwxNi4xMywyNy4xNSBNMTcuMDMsMC41NGgtMi4xMWMtMS4wOSwwLTIuMDEsMC44Mi0yLjE0LDEuOWwtMC4wNywwLjQKCQkJYy0xLjM2LDAuMzQtMi42NSwwLjg5LTMuODQsMS42Mkw4LjY0LDQuM0M4LjMsNC4wMiw3LjgyLDMuODYsNy4zNCwzLjg2Yy0wLjU4LDAtMS4xMiwwLjIyLTEuNTMsMC42M0w0LjMyLDUuOTgKCQkJYy0wLjc3LDAuNzctMC44NSwyLTAuMTcsMi44NmwwLjE0LDAuMmMtMC43NiwxLjIzLTEuMzEsMi41Ni0xLjY1LDMuOTdsLTAuMzksMC4wNkMxLjIxLDEzLjIsMC40LDE0LjEyLDAuNCwxNS4yMXYyLjExCgkJCWMwLDEuMDksMC44MiwyLjAxLDEuOSwyLjE0bDAuMzQsMC4wNmMwLjM1LDEuNDgsMC45NCwyLjg3LDEuNzUsNC4xNWwtMC4yNiwwLjM2Yy0wLjY1LDAuODMtMC41NywyLjA2LDAuMiwyLjgzbDEuNDksMS40OQoJCQljMC40MSwwLjQxLDAuOTUsMC42MywxLjUzLDAuNjNjMC40OCwwLDAuOTUtMC4xNiwxLjMzLTAuNDZsMC4zNy0wLjI3YzEuMTIsMC42NywyLjMzLDEuMTYsMy42NywxLjQ5bDAuMDYsMC40CgkJCWMwLjEzLDEuMDQsMS4wNSwxLjg2LDIuMTQsMS44NmgyLjExYzEuMDksMCwyLjAxLTAuODIsMi4xNC0xLjlsMC4wNS0wLjI4YzEuNS0wLjMzLDIuOC0wLjg0LDQtMS41N2wwLjQyLDAuMwoJCQljMC4zNSwwLjI3LDAuODIsMC40NCwxLjMsMC40NGMwLjU4LDAsMS4xMi0wLjIyLDEuNTMtMC42M2wxLjQ5LTEuNDljMC43Ny0wLjc3LDAuODUtMiwwLjE3LTIuODZsLTAuMjUtMC4zNAoJCQljMC44MS0xLjI4LDEuMzktMi42NywxLjc0LTQuMTRsMC4zNS0wLjA2YzEuMDQtMC4xMywxLjg2LTEuMDUsMS44Ni0yLjE0di0yLjExYzAtMS4wOS0wLjgyLTIuMDEtMS45LTIuMTRsLTAuMzEtMC4wNQoJCQljLTAuMzQtMS40LTAuODktMi43Mi0xLjY0LTMuOTVsMC4xOC0wLjI2YzAuNjUtMC44MywwLjU3LTIuMDYtMC4yLTIuODNsLTEuNDktMS40OWMtMC40MS0wLjQxLTAuOTUtMC42My0xLjUzLTAuNjMKCQkJYy0wLjQ4LDAtMC45NSwwLjE2LTEuMzMsMC40NkwyMy40LDQuNDdjLTEuMjktMC44LTIuNjktMS4zNy00LjE3LTEuNzFMMTkuMTcsMi40QzE5LjA1LDEuMzYsMTguMTIsMC41NCwxNy4wMywwLjU0TDE3LjAzLDAuNTR6CgkJCSBNMTYuMTMsMjYuMTVjLTUuNDQsMC05Ljg2LTQuNDItOS44Ni05Ljg2czQuNDItOS44Niw5Ljg2LTkuODZzOS44Niw0LjQyLDkuODYsOS44NlMyMS41NiwyNi4xNSwxNi4xMywyNi4xNUwxNi4xMywyNi4xNXoiLz4KCTwvZz4KCTxjaXJjbGUgY2xhc3M9InN0MiIgY3g9IjE2IiBjeT0iMTYuMjciIHI9IjkuNjQiLz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMy42NywxNy4yYy0wLjU5LDEuNDctMS4xMSwyLjg4LTEuNzIsNC4yNWMtMC40NCwxLTEuMzIsMC4yOS0yLjExLDAuNTNjMS40OS0zLjU2LDIuOS02Ljk3LDQuMzMtMTAuMzcKCQljMC4yMi0wLjUzLDAuNDMtMS4wNywwLjczLTEuNTVjMC4xNy0wLjI2LDAuNTItMC41NywwLjgtMC41N2MwLjI2LDAsMC42NSwwLjMxLDAuNzcsMC41N2MxLjAzLDIuMzcsMi4wMiw0Ljc1LDMuMDIsNy4xMwoJCWMwLjQzLDEuMDIsMC45MywyLjAzLDEuMjcsMy4wOGMwLjE0LDAuNDQsMC4xNCwxLjE1LTAuMTIsMS40NmMtMC40MSwwLjQ5LTEsMC4xNS0xLjQ1LTAuMjFjLTEuNjUtMS4zMy0zLjI5LTIuNjctNC45NS0zLjk5CgkJQzE0LjA4LDE3LjQsMTMuODgsMTcuMzIsMTMuNjcsMTcuMnogTTE0LjMsMTUuNmMxLjI4LDEsMi41NSwyLDQsMy4xM2MtMC45LTIuMjMtMS43Mi00LjI3LTIuNjItNi41CgkJQzE1LjE2LDEzLjQ4LDE0Ljc0LDE0LjUyLDE0LjMsMTUuNnoiLz4KPC9nPgo8L3N2Zz4=
+    mediatype: image/svg+xml
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: true
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - ansible
+  - automation
+  - event-driven
+  - eda
+  links:
+  - name: EDA Server Operator
+    url: https://github.com/ansible/eda-server-operator
+  - name: EDA Server
+    url: https://github.com/ansible/eda-server
+  maintainers:
+  - email: eda-project@googlegroups.com
+    name: EDA Team
+  maturity: alpha
+  minKubeVersion: 1.22.15
+  provider:
+    name: Ansible
+    url: github.com/ansible/eda-server-operator
+  version: 0.0.0

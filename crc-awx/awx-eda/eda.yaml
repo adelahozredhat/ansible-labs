@@ -1,0 +1,11 @@
+apiVersion: eda.ansible.com/v1alpha1
+kind: EDA
+metadata:
+  name: my-eda
+  namespace: eda
+spec:
+  automation_server_url: https://awx-demo-awx.apps-crc.testing/
+  service_type: ClusterIP
+  ingress_type: Route
+  image_pull_secrets:
+    - pull_secret_name

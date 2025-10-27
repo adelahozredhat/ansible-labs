@@ -1,0 +1,59 @@
+apiVersion: eda.ansible.com/v1alpha1
+kind: EDA
+metadata:
+  labels:
+    app.kubernetes.io/name: eda
+    app.kubernetes.io/instance: eda-sample
+    app.kubernetes.io/part-of: eda-server-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: eda-server-operator
+  name: eda-sample
+spec:
+  no_log: true
+  image_pull_policy: IfNotPresent
+  service_type: ClusterIP
+  ingress_type: Route
+  api:
+    replicas: 1
+    resource_requirements:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+  default_worker:
+    replicas: 2
+    resource_requirements:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+  activation_worker:
+    replicas: 2
+    resource_requirements:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+  scheduler:
+    replicas: 2
+    resource_requirements:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+  ui:
+    replicas: 1
+    resource_requirements:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  redis:
+    replicas: 1
+    resource_requirements:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+  database:
+    resource_requirements:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+    storage_requirements:
+      requests:
+        storage: 20Gi

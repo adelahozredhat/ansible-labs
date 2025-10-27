@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitea
+  # Optional: You can add labels here for organization or selection
+---
+apiVersion: pfe.rhpds.com/v1
+kind: Gitea
+metadata:
+  name: simple-gitea-ocs
+  namespace: gitea
+spec:
+  giteaImageTag: latest
+  giteaVolumeSize: 10Gi
+  giteaVolumeStorageClass: crc-csi-hostpath-provisioner
+  giteaSsl: true
+  postgresqlVolumeSize: 10Gi
+  postgresqlVolumeStorageClass: crc-csi-hostpath-provisioner
+  giteaAdminUser: opentlc-mgr
+  giteaAdminEmail: opentlc-mgr@redhat.com
+  giteaAdminPassword: "opentlc-mgr"
+
+  giteaCreateUsers: true
+  giteaGenerateUserFormat: "lab-user"
+  giteaUserNumber: 1
+  giteaUserPassword: openshift
+
+  giteaMigrateRepositories: true
+  giteaRepositoriesList:
+  # - repo: https://github.com/adelahozredhat/aap-ping-machine-report.git
+  #   name: aap-ping-machine-report
+  #   private: false
+  # - repo: https://github.com/adelahozredhat/aap-inventory-filters-hosts.git
+  #   name: aap-inventory-filters-hosts
+  #   private: false
+  - repo: https://github.com/adelahozredhat/ansible-labs.git
+    name: ansible-labs
+    private: false
+  # - repo: https://github.com/adelahozredhat/template-ansible-playbooks.git
+  #   name: template-ansible-playbooks
+  #   private: false
+  # - repo: https://github.com/adelahozredhat/repository-initializer-ansible.git
+  #   name: repository-initializer-ansible
+  #   private: false
+

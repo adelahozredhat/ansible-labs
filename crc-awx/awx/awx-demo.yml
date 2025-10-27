@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  # The name used here (e.g., 'my-awx-admin-pass') must match the name in the AWX CR spec.
+  name: my-awx-admin-pass 
+  namespace: awx
+stringData:
+  # The password key must be 'password' for the AWX Operator to find it.
+  password: admin
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-demo
+  namespace: awx
+spec:
+  service_type: clusterip
+  ingress_type: Route
+  admin_user: admin
+  admin_password_secret: my-awx-admin-pass 
+  admin_email: admin@example.com

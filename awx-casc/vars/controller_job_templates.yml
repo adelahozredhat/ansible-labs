@@ -1,0 +1,149 @@
+---
+controller_templates:
+  - name: "Send Telegram"
+    description: "Send Telegram"
+    organization: "AdminOnly"
+    project: "AAP Gymkhana2023 Admin"
+    inventory: "Localhost"
+    playbook: "playbooks/send_telegram.yml"
+    ask_variables_on_launch: true
+    extra_vars:
+      controller_hostname: "{{ inventory_hostname }}"
+    credentials:
+      - "Vault Credential"
+
+  - name: "VGVhbTAxIFN0ZXAwCg=="
+    description: "VGVhbTAxIFN0ZXAwCg=="
+    organization: "Team01"
+    project: "[Team01] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "ZZZZ.yml"
+    credentials:
+      - "Team01 Info Jobs MDA="
+
+  - name: "VGVhbTAxIFN0ZXAxCg=="
+    description: "VGVhbTAxIFN0ZXAxCg=="
+    organization: "Team01"
+    project: "[Team01] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "YYYY.yml"
+    credentials:
+      - "Team01 Info Jobs MDE="
+
+  - name: "VGVhbTAxIFN0ZXAyCg=="
+    description: "VGVhbTAxIFN0ZXAyCg=="
+    organization: "Team01"
+    project: "[Team01] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "XXXX.yml"
+    extra_vars:
+      team_name: "team01quarkus"
+
+  - name: "VGVhbTAyIFN0ZXAwCg=="
+    description: "VGVhbTAyIFN0ZXAwCg=="
+    organization: "Team02"
+    project: "[Team02] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "ZZZZ.yml"
+    credentials:
+      - "Team02 Info Jobs MDA="
+
+  - name: "VGVhbTAyIFN0ZXAxCg=="
+    description: "VGVhbTAyIFN0ZXAxCg=="
+    organization: "Team02"
+    project: "[Team02] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "YYYY.yml"
+    credentials:
+      - "Team02 Info Jobs MDE="
+
+  - name: "VGVhbTAyIFN0ZXAyCg=="
+    description: "VGVhbTAyIFN0ZXAyCg=="
+    organization: "Team02"
+    project: "[Team02] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "XXXX.yml"
+    extra_vars:
+      team_name: "team02ansible"
+
+  - name: "VGVhbTAzIFN0ZXAwCg=="
+    description: "VGVhbTAzIFN0ZXAwCg=="
+    organization: "Team03"
+    project: "[Team03] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "ZZZZ.yml"
+    credentials:
+      - "Team03 Info Jobs MDA="
+
+  - name: "VGVhbTAzIFN0ZXAxCg=="
+    description: "VGVhbTAzIFN0ZXAxCg=="
+    organization: "Team03"
+    project: "[Team03] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "YYYY.yml"
+    credentials:
+      - "Team03 Info Jobs MDE="
+
+  - name: "VGVhbTAzIFN0ZXAyCg=="
+    description: "VGVhbTAzIFN0ZXAyCg=="
+    organization: "Team03"
+    project: "[Team03] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "XXXX.yml"
+    extra_vars:
+      team_name: "team03tekton"
+
+  - name: "VGVhbTA0IFN0ZXAwCg=="
+    description: "VGVhbTA0IFN0ZXAwCg=="
+    organization: "Team04"
+    project: "[Team04] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "ZZZZ.yml"
+    credentials:
+      - "Team04 Info Jobs MDA="
+
+  - name: "VGVhbTA0IFN0ZXAxCg=="
+    description: "VGVhbTA0IFN0ZXAxCg=="
+    organization: "Team04"
+    project: "[Team04] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "YYYY.yml"
+    credentials:
+      - "Team04 Info Jobs MDE="
+
+  - name: "VGVhbTA0IFN0ZXAyCg=="
+    description: "VGVhbTA0IFN0ZXAyCg=="
+    organization: "Team04"
+    project: "[Team04] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "XXXX.yml"
+    extra_vars:
+      team_name: "team04argo"
+
+  - name: "VGVhbTA1IFN0ZXAwCg=="
+    description: "VGVhbTA1IFN0ZXAwCg=="
+    organization: "Team05"
+    project: "[Team05] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "ZZZZ.yml"
+    credentials:
+      - "Team05 Info Jobs MDA="
+
+  - name: "VGVhbTA1IFN0ZXAxCg=="
+    description: "VGVhbTA1IFN0ZXAxCg=="
+    organization: "Team05"
+    project: "[Team05] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "YYYY.yml"
+    credentials:
+      - "Team05 Info Jobs MDE="
+
+  - name: "VGVhbTA1IFN0ZXAyCg=="
+    description: "VGVhbTA1IFN0ZXAyCg=="
+    organization: "Team05"
+    project: "[Team05] AAP Gymkhana2023 Teams"
+    inventory: "Localhost"
+    playbook: "XXXX.yml"
+    extra_vars:
+      team_name: "team05podman"
+...
