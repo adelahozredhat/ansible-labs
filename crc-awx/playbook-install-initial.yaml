@@ -196,7 +196,7 @@
             url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch"
             content_type: "json"
             secret: "{{ awx_token.ansible_facts.controller_token.token }}"
-          authorization_header: "Bearer ImVb4twM30jaLLJaspSwxtIi9tLBCt"
+          authorization_header: "Bearer {{ awx_token.ansible_facts.controller_token.token }}"
           events: ["push"]
           active: true
         status_code: [201]
