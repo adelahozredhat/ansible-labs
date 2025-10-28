@@ -1,29 +1,30 @@
 ---
-# Título: Playbook para crear un nuevo repositorio, su webhook y notificar
+# Título: Playbook para crear PAT de usuario, repositorio, webhook y notificar
 # Ejecutable desde AAP/AWX
-- name: Crear nuevo repositorio, webhook y notificar
+- name: Crear PAT de usuario, repositorio, webhook y notificar
   hosts: localhost
   connection: local
   gather_facts: no
 
   vars:
-    # --- Variables de Entrada (Asumidas para AWX/AAP) ---
+    # --- Variables de Entrada ---
+    # El token que tiene permisos de administrador para crear OTROS tokens y repos.
+    # admin_token_repositorio: "..." 
+    
     # Parámetros de Repositorio
     # usuario: "mi_usuario"
     # grupo: "mi_org"
-    # descripcion: "Descripción del nuevo repositorio"
-    # repo_base: "mi-template-repo"
-    # repo_nuevo: "mi-nuevo-proyecto"
-    # tipo_repositorio: "github" | "gitlab" | "gitea"
-    # host_repositorio: "api.github.com" | "gitlab.com" | "gitea.miempresa.com"
-    # token_repositorio: "..." # Token de Acceso al Repositorio
-
-    # Parámetros de Webhook (¡NUEVOS!)
-    webhook_url: "https://ci.miempresa.com/webhook/handle"
+    repo_base: "template-ansible-playbooks"
+    repo_nuevo: "ansible-playbook-example"
+    tipo_repositorio: "gitlab" #|"github" | "gitlab" | "gitea"
+    host_repositorio: "gitea.miempresa.com" #"api.github.com" # | "gitlab.com" | "gitea.miempresa.com"
+    
+    # Parámetros de Webhook
+    webhook_url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch/"
     webhook_secret: "un-secreto-seguro"
-    webhook_events: ["push", "pull_request"] # Eventos comunes
+    webhook_events: ["push", "pull_request"]
 
-    # Parámetros de Comunicación (Email/Slack)
+    # Parámetros de Comunicación
     # email_destinatario: "equipo@miempresa.com"
     # slack_channel: "#notificaciones-repos"
     # slack_api_token: "xoxb-..." 
@@ -33,37 +34,108 @@
 
     # Rutas y URLs
     local_path: "/tmp/{{ repo_nuevo }}_clone"
-    clone_url_base: "https://{{ token_repositorio }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_base }}.git"
-    clone_url_nuevo: "https://{{ token_repositorio }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_nuevo }}.git"
-    repo_final_url: ""
+    
+    # Definiremos esta variable para que todas las tareas usen el nuevo token.
+    newly_created_pat: ""
+
+    teams_webhook_url: "https://tuhost.webhook.office.com/webhookb2/..."
+    notification_title: "✅ Playbook Finalizado Exitosamente"
+    notification_text: "El playbook de configuración ha terminado en el servidor {{ inventory_hostname }}."
 
   tasks:
 
     # =========================================================================
-    # 1. Tareas de Creación de Repositorio y Webhook (GitHub)
+    # 0. Tareas de Creación del Token de Acceso Personal (PAT)
+    #    IMPORTANTE: Este token se usará para el resto de las operaciones.
     # =========================================================================
+
+    # --- 0.1 GitHub PAT Creation (using URI to simulate PAT creation for auth user)
+    - name: 0.1 Crear PAT de Usuario en GitHub (Scope: repo)
+      ansible.builtin.uri:
+        url: "https://{{ host_repositorio }}/user/tokens"
+        method: POST
+        headers:
+          Authorization: "token {{ admin_token_repositorio }}"
+        body_format: json
+        body:
+          scopes: ["repo", "workflow"] # Alcance amplio para crear y modificar repos
+          note: "PAT for {{ repo_nuevo }}"
+        status_code: [201]
+      when: tipo_repositorio == 'github'
+      register: pat_creation_result_github
+      
+    - name: 0.1.1 Setear nuevo PAT para GitHub
+      ansible.builtin.set_fact:
+        newly_created_pat: "{{ pat_creation_result_github.json.token }}"
+      when: tipo_repositorio == 'github' and pat_creation_result_github is succeeded
+
+
+    # --- 0.2 GitLab PAT Creation (using dedicated module)
+    - name: 0.2 Crear PAT de Usuario en GitLab (Scope: api)
+      community.gitlab.gitlab_user_access_token:
+        api_url: "https://{{ host_repositorio }}"
+        api_token: "{{ admin_token_repositorio }}"
+        user_id: "{{ usuario }}" # Asumiendo que 'usuario' es el propietario de la API token
+        name: "PAT for {{ repo_nuevo }}"
+        scopes: ["api", "read_repository", "write_repository"] # Alcance amplio para crear y modificar repos
+        state: present
+      when: tipo_repositorio == 'gitlab'
+      register: pat_creation_result_gitlab
+
+    - name: 0.2.1 Setear nuevo PAT para GitLab
+      ansible.builtin.set_fact:
+        newly_created_pat: "{{ pat_creation_result_gitlab.access_token }}"
+      when: tipo_repositorio == 'gitlab' and pat_creation_result_gitlab is succeeded
+
+
+    # --- 0.3 Gitea PAT Creation (using URI)
+    - name: 0.3 Crear PAT de Usuario en Gitea (Scope: repo)
+      ansible.builtin.uri:
+        url: "https://{{ host_repositorio }}/api/v1/users/{{ usuario }}/tokens"
+        method: POST
+        headers:
+          Authorization: "token {{ admin_token_repositorio }}" # Usar el token del admin para crear el token para 'usuario'
+        body_format: json
+        body:
+          name: "PAT for {{ repo_nuevo }}"
+          scopes: ["write:repository", "read:repository", "write:issue", "read:issue"] # Alcance amplio
+        status_code: [201]
+      when: tipo_repositorio == 'gitea'
+      register: pat_creation_result_gitea
+
+    - name: 0.3.1 Setear nuevo PAT para Gitea
+      ansible.builtin.set_fact:
+        newly_created_pat: "{{ pat_creation_result_gitea.json.sha1 }}"
+      when: tipo_repositorio == 'gitea' and pat_creation_result_gitea is succeeded
+
+
+    # =========================================================================
+    # 1. Tareas de Creación de Repositorio y Webhook (Usando el nuevo PAT)
+    # =========================================================================
+
     - name: 1.1 Crear repositorio en GitHub desde plantilla
       community.general.github_repo:
         api_url: "https://{{ host_repositorio }}"
-        api_token: "{{ token_repositorio }}"
+        api_token: "{{ newly_created_pat }}" # <--- USANDO EL NUEVO PAT
         name: "{{ repo_nuevo }}"
         organization: "{{ grupo }}"
         state: "present"
-        description: "{{ descripcion }}"
         template_repository: "{{ grupo }}/{{ repo_base }}"
-      when: tipo_repositorio == 'github'
+      when: tipo_repositorio == 'github' and newly_created_pat is defined
       register: github_result
+      # ... (Resto de tareas de GitHub, GitLab y Gitea siguen, usando {{ newly_created_pat }} en lugar de {{ admin_token_repositorio }}) ...
+
+    # =========================================================================
+    # 1. Tareas de Creación (GitHub) - Continuación
+    # =========================================================================
 
     - name: 1.2 Crear Webhook en GitHub
       community.general.github_webhook:
-        api_url: "https://{{ host_repositorio }}"
-        token: "{{ token_repositorio }}"
+        token: "{{ newly_created_pat }}"
         repo: "{{ grupo }}/{{ repo_nuevo }}"
         url: "{{ webhook_url }}"
         secret: "{{ webhook_secret }}"
         events: "{{ webhook_events }}"
-        content_type: "json"
-        ssl_verification: yes
         state: present
       when: tipo_repositorio == 'github' and github_result is succeeded
 
@@ -72,32 +144,30 @@
         repo_final_url: "{{ github_result.repository.html_url }}"
       when: tipo_repositorio == 'github' and github_result is succeeded
 
+
     # =========================================================================
-    # 2. Tareas de Creación de Repositorio y Webhook (GitLab)
+    # 2. Tareas de Creación (GitLab) - Continuación
     # =========================================================================
+    
     - name: 2.1 Crear repositorio en GitLab desde plantilla
       community.general.gitlab_project:
         api_url: "https://{{ host_repositorio }}"
-        api_token: "{{ token_repositorio }}"
+        api_token: "{{ newly_created_pat }}"
         name: "{{ repo_nuevo }}"
         path_with_namespace: "{{ grupo }}/{{ repo_nuevo }}"
         state: "present"
-        description: "{{ descripcion }}"
         template_project: "{{ grupo }}/{{ repo_base }}"
-      when: tipo_repositorio == 'gitlab'
+      when: tipo_repositorio == 'gitlab' and newly_created_pat is defined
       register: gitlab_result
 
     - name: 2.2 Crear Webhook en GitLab
       community.general.gitlab_hook:
-        api_url: "https://{{ host_repositorio }}"
-        api_token: "{{ token_repositorio }}"
+        api_token: "{{ newly_created_pat }}"
         project_id: "{{ grupo }}/{{ repo_nuevo }}"
         url: "{{ webhook_url }}"
-        # GitLab usa 'token' para el secreto, no 'secret'
-        token: "{{ webhook_secret }}" 
-        push_events: true # Simplificado, asumiendo push es el evento principal
+        token: "{{ webhook_secret }}"
+        push_events: true
         merge_requests_events: true
-        enable_ssl_verification: yes
         state: present
       when: tipo_repositorio == 'gitlab' and gitlab_result is succeeded
 
@@ -107,24 +177,22 @@
       when: tipo_repositorio == 'gitlab' and gitlab_result is succeeded
 
     # =========================================================================
-    # 3. Tareas de Creación de Repositorio y Webhook (Gitea)
+    # 3. Tareas de Creación (Gitea) - Continuación
     # =========================================================================
-
+    
     - name: 3.1 Crear el nuevo repositorio vacío en Gitea (API)
       ansible.builtin.uri:
         url: "https://{{ host_repositorio }}/api/v1/user/repos"
         method: POST
         headers:
-          Authorization: "token {{ token_repositorio }}"
-          Content-Type: "application/json"
+          Authorization: "token {{ newly_created_pat }}" # <--- USANDO EL NUEVO PAT
         body_format: json
         body:
           name: "{{ repo_nuevo }}"
-          description: "{{ descripcion }}"
           owner: "{{ grupo }}"
           private: false
         status_code: [201]
-      when: tipo_repositorio == 'gitea'
+      when: tipo_repositorio == 'gitea' and newly_created_pat is defined
       register: gitea_create_result
 
     - name: 3.2 Establecer URL final para Gitea
@@ -137,30 +205,33 @@
         url: "https://{{ host_repositorio }}/api/v1/repos/{{ grupo }}/{{ repo_nuevo }}/hooks"
         method: POST
         headers:
-          Authorization: "token {{ token_repositorio }}"
-          Content-Type: "application/json"
+          Authorization: "token {{ newly_created_pat }}" # <--- USANDO EL NUEVO PAT
         body_format: json
         body:
-          type: "gitea" # Tipo de webhook estándar en Gitea
+          type: "gitea"
           config:
             url: "{{ webhook_url }}"
-            content_type: "json"
             secret: "{{ webhook_secret }}"
-            insecure_ssl: "0" # "0" para verificar SSL, "1" para no verificar
+            insecure_ssl: "0"
           events: "{{ webhook_events }}"
           active: true
         status_code: [201]
       when: tipo_repositorio == 'gitea' and gitea_create_result is succeeded
 
     # --- CLONACIÓN Y PUSH DEL CONTENIDO PARA GITEA ---
+    # Nota: Aquí se usará el PAT para autenticarse en las URLs de clonación
+    
     - name: 3.4 Clonar el repositorio base localmente
       ansible.builtin.git:
-        repo: "{{ clone_url_base }}"
+        # La URL de clonación debe usar el nuevo PAT
+        repo: "https://{{ newly_created_pat }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_base }}.git"
         dest: "{{ local_path }}"
         version: master
         clone: yes
         update: yes
       when: tipo_repositorio == 'gitea' and repo_final_url is defined
+      
+    # ... (Resto de tareas de Gitea - limpieza y push, usando el nuevo PAT en la URL del push) ...
 
     - name: 3.5 Eliminar el directorio .git del clon para un nuevo historial
       ansible.builtin.file:
@@ -183,7 +254,8 @@
       args:
         chdir: "{{ local_path }}"
       loop:
-        - git remote add origin {{ clone_url_nuevo }}
+        # La URL de push debe usar el nuevo PAT
+        - git remote add origin https://{{ newly_created_pat }}@{{ host_repositorio }}/{{ grupo }}/{{ repo_nuevo }}.git
         - git push -u origin master
       when: tipo_repositorio == 'gitea' and repo_final_url is defined
 
@@ -192,7 +264,6 @@
         path: "{{ local_path }}"
         state: absent
       when: tipo_repositorio == 'gitea' and repo_final_url is defined
-
 
     # =========================================================================
     # 4. Tareas de Comunicación
@@ -209,13 +280,14 @@
         body: |
           Hola,
 
-          Se ha completado la creación automatizada de un nuevo repositorio.
-          También se ha configurado el webhook para la URL: {{ webhook_url }}
-
-          - Nombre del Repositorio: {{ repo_nuevo }}
-          - Creado a partir de: {{ repo_base }}
-          - Plataforma: {{ tipo_repositorio | upper }}
+          Se ha completado la automatización.
           - URL de Acceso: {{ repo_final_url }}
+          - Webhook ({{ webhook_url }}) configurado.
+          - PAT de usuario creado para este proceso.
+
+          🚨 ¡ADVERTENCIA DE SEGURIDAD! El nuevo PAT de usuario tiene alcance amplio y es visible 
+          en los logs de la ejecución (variable 'newly_created_pat'). Debería ser almacenado 
+          inmediatamente en un gestor de secretos (Vault) y luego borrado de la plataforma si no es necesario.
 
           Saludos,
           Plataforma de Automatización AWX/AAP
@@ -225,7 +297,19 @@
       community.general.slack:
         token: "{{ slack_api_token }}"
         channel: "{{ slack_channel }}"
-        msg: "🚀 *Nuevo Repositorio Creado en {{ tipo_repositorio | upper }}*\n- *Nombre:* `{{ repo_nuevo }}`\n- *Webhook:* Configurado para `{{ webhook_url }}`\n- *URL:* <{{ repo_final_url }}|Abrir Repositorio>"
+        msg: "🚀 *Nuevo Repositorio Creado en {{ tipo_repositorio | upper }}*\n- *Nombre:* `{{ repo_nuevo }}`\n- *URL:* <{{ repo_final_url }}|Abrir Repositorio>\n- *PAT Creado:* Nuevo PAT de usuario generado para la automatización.\n*(Recuperar el valor del PAT de los logs de AWX/AAP)*"
         username: "AWX Automation"
         icon_emoji: ":rocket:"
       when: repo_final_url is defined and repo_final_url != "" and slack_api_token is defined
+
+    - name: Enviar mensaje a Microsoft Teams
+      ansible.builtin.uri:
+        url: "{{ teams_webhook_url }}"
+        method: POST
+        body_format: json
+        status_code: 200
+        body:
+          title: "{{ notification_title }}"
+          text: "{{ notification_text }}"
+      delegate_to: localhost
+      when: repo_final_url is defined and repo_final_url != "" and teams_webhook_url is defined

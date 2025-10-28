@@ -31,7 +31,7 @@ kubectl config set-context --current --namespace=awx
 
 awx-demo.yml
 
-kubectl apply -f awx-demo.yml
+kubectl apply -f awx-demo.yaml
 
 
 ...

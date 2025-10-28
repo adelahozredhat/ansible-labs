@@ -11,6 +11,7 @@ metadata:
   name: simple-gitea-ocs
   namespace: gitea
 spec:
+  giteaHostname: simple-gitea-ocs-gitea.apps-crc.testing
   giteaImageTag: latest
   giteaVolumeSize: 10Gi
   giteaVolumeStorageClass: crc-csi-hostpath-provisioner
@@ -24,7 +25,7 @@ spec:
   giteaCreateUsers: true
   giteaGenerateUserFormat: "lab-user"
   giteaUserNumber: 1
-  giteaUserPassword: openshift
+  giteaUserPassword: lab-user
 
   giteaMigrateRepositories: true
   giteaRepositoriesList:
@@ -37,10 +38,10 @@ spec:
   - repo: https://github.com/adelahozredhat/ansible-labs.git
     name: ansible-labs
     private: false
-  # - repo: https://github.com/adelahozredhat/template-ansible-playbooks.git
-  #   name: template-ansible-playbooks
-  #   private: false
+  - repo: https://github.com/adelahozredhat/template-ansible-playbooks.git
+    name: template-ansible-playbooks
+    private: false
   # - repo: https://github.com/adelahozredhat/repository-initializer-ansible.git
   #   name: repository-initializer-ansible
   #   private: false
-
+  giteaConfigMapName: gitea-custom-app-ini

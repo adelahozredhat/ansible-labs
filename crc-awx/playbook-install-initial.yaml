@@ -1,0 +1,204 @@
+---
+# Título: Playbook para crear un nuevo repositorio, su webhook y notificar
+# Ejecutable desde AAP/AWX
+- name: Crear nuevo repositorio, webhook y notificar
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    crc_url_api_client: "https://api.crc.testing:6443"
+    crc_user: "kubeadmin"
+    crc_validate_certs: false
+    gitea_username: "lab-user"
+    gitea_password: "lab-user"
+    gitea_validate_certs: false
+
+    awx_host: awx-demo-awx.apps-crc.testing
+    awx_user: admin
+    awx_password: admin
+
+    token_user: "devops_user"
+    token_scope: "write"
+
+    ca_filename: crc-router-ca.crt
+    configmap_name: gitea-custom-ca
+
+  tasks:
+
+    - name: 
+      shell: "oc login -u {{crc_user}} {{crc_url_api_client}}"
+
+    - name: 
+      shell: oc whoami --show-token
+      register: token
+
+    - name: Install Gitea Operator
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        validate_certs: "{{ crc_validate_certs }}"
+        api_key: "{{ token.stdout }}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='gitea/') }}"
+      register: step1
+
+    - name: Install AWX Operator
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='awx/') }}"
+      register: step2
+
+    - name: Install EDA AWX Operator
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='awx-eda/') }}"
+      register: step3
+
+    - name: Wait for application deployment to stabilize (sleep 5m)
+      ansible.builtin.pause:
+        minutes: 5
+      when: step1.changed or step2.changed or step3.changed
+
+    - name: 2. Create ConfigMap in Gitea Namespace from Local File
+      # Create the ConfigMap using the definition argument and file lookup
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: gitea
+      # The ConfigMap will contain the key 'ca-bundle.crt' with the certificate content
+      # This task implicitly handles base64 encoding/decoding if the lookup works correctly
+
+    - name: Create Gitea custom app.ini ConfigMap for Webhook Bypass (Insecure)
+      kubernetes.core.k8s:
+        state: present
+        namespace: "gitea" # Define this variable in your playbook or vars file
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: gitea-custom-app-ini
+          data:
+            # 'lookup' reads the content of the local file and sets it under the 'app.ini' key
+            app.ini: "{{ lookup('file', 'gitea/webhook_config.ini') }}"
+
+    - name: Install Gitea Instance
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: gitea/gitea.yaml
+      register: step4
+
+    - name: Install AWX Instance
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: awx/awx-demo.yaml
+      register: step5
+
+    - name: Install EDA AWX Instance
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: awx-eda/eda.yaml
+      register: step6
+
+    - name: Wait for application deployment to stabilize (sleep 10m)
+      ansible.builtin.pause:
+        minutes: 10
+      when: step3.changed or step4.changed or step5.changed
+
+    - name: Create the Access Token for the Application in AWX
+      awx.awx.token:
+        controller_host: "{{ awx_host }}"
+        controller_username: "{{ awx_user }}"
+        controller_password: "{{ awx_password }}"
+        validate_certs: false
+        
+        # Link the token to the application
+        scope: "write"
+        description: "PAT for lab"
+        state: present
+      register: awx_token
+      
+    # 3. Display the sensitive token value (USE WITH CAUTION)
+    - name: Display the newly created token (SAVE THIS!)
+      ansible.builtin.debug:
+        msg: "The application token is: {{ awx_token.ansible_facts.controller_token.token }}"
+        # Note: The token value is only returned once upon creation!
+        # DO NOT store this in plain text! Use Ansible Vault or a secrets manager.
+
+    # --- 0.3 Gitea PAT Creation (using URI)
+    - name: Create PAT in GITEA for lab-user
+      ansible.builtin.uri:
+        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/users/{{ gitea_username }}/tokens"
+        method: POST
+        body_format: json
+        user: "{{ gitea_username }}"
+        password: "{{ gitea_password }}"
+        force_basic_auth: yes
+        body:
+          name: "PAT for lab"
+          scopes: ["write:repository", "write:issue", "write:activitypub", "write:misc", "write:notification" , "write:organization", "write:package", "write:user"] # Alcance amplio
+        status_code: [201]
+        validate_certs: "{{crc_validate_certs}}"
+      register: pat_creation_result_gitea
+
+    - name: Display the newly created token (SAVE THIS!)
+      debug:
+        msg: "{{ pat_creation_result_gitea.json.sha1 }}"
+
+
+    - name: 3.1 Crear el nuevo repositorio vacío en Gitea (API)
+      ansible.builtin.uri:
+        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/user/repos"
+        method: POST
+        headers:
+          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
+        body_format: json
+        body:
+          name: "Prueba"
+          owner: "{{ gitea_username }}"
+          private: false
+        status_code: [201]
+        validate_certs: "{{crc_validate_certs}}"
+      register: gitea_create_result
+
+    - name: 3.2 Establecer URL final para Gitea
+      ansible.builtin.set_fact:
+        repo_final_url: "{{ gitea_create_result.json.html_url }}"
+      when: gitea_create_result is succeeded
+
+    - name: 3.3 Crear Webhook en Gitea (API)
+      ansible.builtin.uri:
+        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/repos/{{ gitea_username }}/Prueba/hooks"
+        method: POST
+        headers:
+          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
+        body_format: json
+        body:
+          type: "gogs"
+          config:
+            url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch"
+            content_type: "json"
+            secret: "{{ awx_token.ansible_facts.controller_token.token }}"
+          authorization_header: "Bearer ImVb4twM30jaLLJaspSwxtIi9tLBCt"
+          events: ["push"]
+          active: true
+        status_code: [201]
+        validate_certs: "{{crc_validate_certs}}"
+      when: gitea_create_result is succeeded
