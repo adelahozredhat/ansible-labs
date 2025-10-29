@@ -20,9 +20,9 @@
     # host_repositorio: "gitea.miempresa.com" #"api.github.com" # | "gitlab.com" | "gitea.miempresa.com"
     
     # Parámetros de Webhook
-    webhook_url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch/"
-    webhook_secret: "un-secreto-seguro"
-    webhook_events: ["push", "pull_request"]
+    # webhook_url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch/"
+    # webhook_secret: "un-secreto-seguro"
+    # webhook_events: ["push", "pull_request"]
 
     # Parámetros de Comunicación
     # email_destinatario: "equipo@miempresa.com"
@@ -38,9 +38,9 @@
     # Definiremos esta variable para que todas las tareas usen el nuevo token.
     newly_created_pat: ""
 
-    teams_webhook_url: "https://tuhost.webhook.office.com/webhookb2/..."
-    notification_title: "✅ Playbook Finalizado Exitosamente"
-    notification_text: "El playbook de configuración ha terminado en el servidor {{ inventory_hostname }}."
+    # teams_webhook_url: "https://tuhost.webhook.office.com/webhookb2/..."
+    # notification_title: "✅ Playbook Finalizado Exitosamente"
+    # notification_text: "El playbook de configuración ha terminado en el servidor {{ inventory_hostname }}."
 
   tasks:
 
@@ -120,7 +120,6 @@
         name: "{{ repo_nuevo }}"
         organization: "{{ grupo }}"
         state: "present"
-        template_repository: "{{ grupo }}/{{ repo_base }}"
       when: tipo_repositorio == 'github' and newly_created_pat is defined
       register: github_result
       # ... (Resto de tareas de GitHub, GitLab y Gitea siguen, usando {{ newly_created_pat }} en lugar de {{ admin_token_repositorio }}) ...
@@ -156,7 +155,6 @@
         name: "{{ repo_nuevo }}"
         path_with_namespace: "{{ grupo }}/{{ repo_nuevo }}"
         state: "present"
-        template_project: "{{ grupo }}/{{ repo_base }}"
       when: tipo_repositorio == 'gitlab' and newly_created_pat is defined
       register: gitlab_result
 
@@ -291,7 +289,7 @@
 
           Saludos,
           Plataforma de Automatización AWX/AAP
-      when: repo_final_url is defined and repo_final_url != "" and smtp_host is defined
+      when: repo_final_url is defined and repo_final_url != "" and smtp_host is defined and "email" in canales_comunicacion
 
     - name: 4.2 ENVIAR NOTIFICACIÓN POR SLACK (community.general.slack)
       community.general.slack:
@@ -300,7 +298,7 @@
         msg: "🚀 *Nuevo Repositorio Creado en {{ tipo_repositorio | upper }}*\n- *Nombre:* `{{ repo_nuevo }}`\n- *URL:* <{{ repo_final_url }}|Abrir Repositorio>\n- *PAT Creado:* Nuevo PAT de usuario generado para la automatización.\n*(Recuperar el valor del PAT de los logs de AWX/AAP)*"
         username: "AWX Automation"
         icon_emoji: ":rocket:"
-      when: repo_final_url is defined and repo_final_url != "" and slack_api_token is defined
+      when: repo_final_url is defined and repo_final_url != "" and slack_api_token is defined and "slack" in canales_comunicacion
 
     - name: Enviar mensaje a Microsoft Teams
       ansible.builtin.uri:
@@ -312,4 +310,4 @@
           title: "{{ notification_title }}"
           text: "{{ notification_text }}"
       delegate_to: localhost
-      when: repo_final_url is defined and repo_final_url != "" and teams_webhook_url is defined
+      when: repo_final_url is defined and repo_final_url != "" and teams_webhook_url is defined and "teams" in canales_comunicacion
