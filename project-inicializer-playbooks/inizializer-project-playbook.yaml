@@ -14,10 +14,10 @@
     # Parámetros de Repositorio
     # usuario: "mi_usuario"
     # grupo: "mi_org"
-    repo_base: "template-ansible-playbooks"
-    repo_nuevo: "ansible-playbook-example"
-    tipo_repositorio: "gitlab" #|"github" | "gitlab" | "gitea"
-    host_repositorio: "gitea.miempresa.com" #"api.github.com" # | "gitlab.com" | "gitea.miempresa.com"
+    # repo_base: "template-ansible-playbooks"
+    # repo_nuevo: "ansible-playbook-example"
+    # tipo_repositorio: "gitlab" #|"github" | "gitlab" | "gitea"
+    # host_repositorio: "gitea.miempresa.com" #"api.github.com" # | "gitlab.com" | "gitea.miempresa.com"
     
     # Parámetros de Webhook
     webhook_url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch/"

@@ -1,9 +1,0 @@
----
-controller_organizations:
-  - name: "Team01"
-  - name: "Team02"
-  - name: "Team03"
-  - name: "Team04"
-  - name: "Team05"
-  - name: "AdminOnly"
-...

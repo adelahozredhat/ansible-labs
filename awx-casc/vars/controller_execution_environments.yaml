@@ -1,0 +1,15 @@
+---
+controller_execution_environments:
+  - name: "AWX EE (24.6.1)"
+    description: ""
+    image: "quay.io/ansible/awx-ee:24.6.1"
+    pull: ""
+  - name: "AWX EE (latest)"
+    description: ""
+    image: "quay.io/ansible/awx-ee:latest"
+    pull: ""
+  - name: "Control Plane Execution Environment"
+    description: ""
+    image: "quay.io/ansible/awx-ee:24.6.1"
+    pull: ""
+...

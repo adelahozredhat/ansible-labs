@@ -1,6 +1,0 @@
-pass_team01: team01quarkus
-pass_team02: team02ansible
-pass_team03: team03tekton
-pass_team04: team04argo
-pass_team05: team05podman
-vault_pass: redhat00
