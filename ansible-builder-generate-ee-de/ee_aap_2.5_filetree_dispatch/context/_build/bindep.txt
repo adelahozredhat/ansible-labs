@@ -1,0 +1,7 @@
+systemd-devel
+python3-devel
+libxml2-devel
+libxslt-devel
+gcc
+python3
+wget

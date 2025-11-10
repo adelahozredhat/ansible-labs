@@ -43,12 +43,12 @@ controller_templates:
     diff_mode: false
     webhook_service: ""
     prevent_instance_group_fallback: false
-  - name: "inizializer-project-playbook-gitea"
+  - name: "inizializer-project-playbook"
     description: ""
     organization: "Default"
     project: "ansible_labs"
     inventory: "Demo Inventory"
-    playbook: "project-inicializer-playbooks/inizializer-project-playbook-gitea.yaml"
+    playbook: "project-inicializer-playbooks/inizializer-project-playbook.yaml"
     scm_branch: ""
     forks: 0
     limit: ""
@@ -56,6 +56,11 @@ controller_templates:
     job_type: "run"
     job_slice_count: 1
     use_fact_cache: false
+    credentials:
+      - "gitea"
+      - "gmail-smtp"
+      - "slack"
+      - "TEams"
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -79,7 +84,51 @@ controller_templates:
     start_at_task: ""
     timeout: 0
     host_config_key: ""
-    survey_enabled: false
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      spec:
+        - max: 1024
+          min: 0
+          type: multiplechoice
+          choices:
+            - !unsafe "gitea"
+            - !unsafe "github"
+            - !unsafe "gitlab"
+          required: True
+          variable: tipo_repositorio
+          new_question: False
+          question_name: Seleccione el repositorio en el que quiere crear el repositorio de playbook
+          question_description: !unsafe "Template Repository for playbooks"
+        - max: 1024
+          min: 0
+          type: text
+          required: True
+          variable: grupo
+          new_question: False
+          question_name: Grupo para el nuevo repositorio
+          question_description: !unsafe "Grupo para el nuevo repositorio"
+        - max: 1024
+          min: 0
+          type: text
+          required: True
+          variable: repo_nuevo
+          new_question: False
+          question_name: Nombre nuevo repositorio
+          question_description: !unsafe "Nombre nuevo repositorio"
+        - max: 1024
+          min: 0
+          type: multiselect
+          choices:
+            - !unsafe "email"
+            - !unsafe "slack"
+            - !unsafe "teams"
+          required: True
+          variable: canales_comunicacion
+          new_question: False
+          question_name: Por que canales quieres notificar la creacción
+          question_description: !unsafe "quieres notificar la creacción"
+      description: ""
     become_enabled: false
     diff_mode: false
     webhook_service: ""

@@ -29,19 +29,28 @@ spec:
 
   giteaMigrateRepositories: true
   giteaRepositoriesList:
-  # - repo: https://github.com/adelahozredhat/aap-ping-machine-report.git
-  #   name: aap-ping-machine-report
-  #   private: false
+  - repo: https://github.com/adelahozredhat/aap-ping-machine-report.git
+    name: aap-ping-machine-report
+    private: false
   # - repo: https://github.com/adelahozredhat/aap-inventory-filters-hosts.git
   #   name: aap-inventory-filters-hosts
   #   private: false
-  - repo: https://github.com/adelahozredhat/ansible-labs.git
-    name: ansible-labs
-    private: false
   - repo: https://github.com/adelahozredhat/template-ansible-playbooks.git
     name: template-ansible-playbooks
     private: false
-  # - repo: https://github.com/adelahozredhat/repository-initializer-ansible.git
-  #   name: repository-initializer-ansible
+  - repo: https://github.com/adelahozredhat/repository-initializer-ansible.git
+    name: repository-initializer-ansible
+    private: false
+  - repo: https://github.com/adelahozredhat/casc-aap.git
+    name: casc-aap
+    private: false
+  - repo: https://github.com/adelahozredhat/casc-awx.git
+    name: casc-awx
+    private: false
+  - repo: https://github.com/adelahozredhat/livecycle_playbooks.git
+    name: livecycle_playbooks
+    private: false
+  # - repo: https://github.com/adelahozredhat/ansible-labs.git
+  #   name: ansible-labs
   #   private: false
   giteaConfigMapName: gitea-custom-app-ini

@@ -1,0 +1,7 @@
+collections:
+- infra.aap_configuration_extended
+- infra.aap_configuration
+- ansible.controller
+- ansible.platform
+- ansible.hub
+- ansible.eda
