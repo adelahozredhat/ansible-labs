@@ -2,4 +2,7 @@
 aap_organizations:
   - name: "Default"
     description: ""
+    galaxy_credentials:
+      - Automation Hub RedHat
+      - Ansible Galaxy
 ...

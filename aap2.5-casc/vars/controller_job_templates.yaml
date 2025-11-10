@@ -61,7 +61,7 @@ controller_templates:
       - "gmail-smtp"
       - "slack"
       - "TEams"
-      - "aap_webhook"
+      - "aap_login"
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -134,5 +134,234 @@ controller_templates:
     become_enabled: false
     diff_mode: false
     webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_casc_filetree"
+    description: ""
+    organization: "Default"
+    project: "repository_casc_aap"
+    inventory: "Demo Inventory"
+    playbook: "playbook-filetree.yaml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "gitea"
+      - "aap_login"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AAP_2.5_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    become_enabled: false
+    diff_mode: false
+    webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_casc_dispath"
+    description: ""
+    organization: "Default"
+    project: "repository_casc_aap"
+    inventory: "Demo Inventory"
+    playbook: "playbook-dispatch-general.yml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "aap_login"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AAP_2.5_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: true
+    survey_spec:
+      name: "playbook_casc_dispath"
+      spec:
+        - max: 1024
+          min: 0
+          type: multiplechoice
+          choices:
+            - !unsafe "dev"
+            - !unsafe "pre"
+            - !unsafe "pro"
+          required: True
+          variable: environment
+          new_question: True
+          question_name: environment
+          question_description: !unsafe "environment"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: slack_token
+          new_question: True
+          question_name: slack_token
+          question_description: !unsafe "slack_token"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: slack_channel
+          new_question: True
+          question_name: slack_channel
+          question_description: !unsafe "slack_channel"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: gmail_smtp_user
+          new_question: True
+          question_name: gmail_smtp_user
+          question_description: !unsafe "gmail_smtp_user"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: gmail_smtp_password
+          new_question: True
+          question_name: gmail_smtp_password
+          question_description: !unsafe "gmail_smtp_password"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: git_token
+          new_question: True
+          question_name: git_token
+          question_description: !unsafe "git_token"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: container_registry_quayio_password
+          new_question: True
+          question_name: container_registry_quayio_password
+          question_description: !unsafe "container_registry_quayio_password"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: container_registry_quayio_username
+          new_question: True
+          question_name: container_registry_quayio_username
+          question_description: !unsafe "container_registry_quayio_username"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_url_hub
+          new_question: True
+          question_name: automation_url_hub
+          question_description: !unsafe "automation_url_hub"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_sso_hub
+          new_question: True
+          question_name: automation_sso_hub
+          question_description: !unsafe "automation_sso_hub"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_token_hub
+          new_question: True
+          question_name: automation_token_hub
+          question_description: !unsafe "automation_token_hub"
+      description: ""
+    become_enabled: false
+    diff_mode: false
+    webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_livecycle"
+    description: ""
+    organization: "Default"
+    project: "repository_livecycle_playbooks"
+    inventory: "Demo Inventory"
+    playbook: "playbook-test.yaml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "gitea"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AAP_2.5_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    become_enabled: false
+    diff_mode: false
+    webhook_service: "github"
     prevent_instance_group_fallback: false
 ...

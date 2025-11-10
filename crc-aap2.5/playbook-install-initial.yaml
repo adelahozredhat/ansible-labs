@@ -162,31 +162,27 @@
       delay: "15"
       delegate_to: localhost
 
-    - name: Create the Access Token for the Application in AAP
-      ansible.platform.token:
-        gateway_hostname: "{{ awx_host }}"
-        gateway_username: "{{ awx_user }}"
-        gateway_password: "{{ awx_password }}"
+    - name: "Get the Authentication Token for the future requests"
+      ansible.builtin.uri:
+        url: "https://{{ awx_host }}/api/gateway/v1/tokens/"
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+        method: POST
+        force_basic_auth: true
         validate_certs: false
-        
-        # Link the token to the application
-        scope: "write"
-        description: "PAT for lab"
-        state: present
-      register: awx_token
+        status_code: 201
+      register: authtoken_res
 
-    # 3. Display the sensitive token value (USE WITH CAUTION)
-    - name: Display the newly created token (SAVE THIS!)
-      ansible.builtin.debug:
-        msg: "The application token is: {{ awx_token.ansible_facts.aap_token.token }}"
-        # Note: The token value is only returned once upon creation!
-        # DO NOT store this in plain text! Use Ansible Vault or a secrets manager.
+    - name: "Set the oauth token to be used since now"
+      ansible.builtin.set_fact:
+        aap_token: "{{ authtoken_res.json.token }}"
+        aap_oauthtoken_url: "{{ authtoken_res.json.url }}"
 
     - name: Set the license using a file
       ansible.controller.license:
         manifest: "../../manifest_AAP2.5_20251030T211523Z.zip"
         controller_host: "{{ awx_host }}"
-        aap_token: "{{ awx_token.ansible_facts.aap_token.token }}"
+        aap_token: "{{ aap_token }}"
         # controller_username: "{{ awx_user }}"
         # controller_password: "{{ awx_password }}"
         validate_certs: false
@@ -196,24 +192,16 @@
       delay: "15"
       delegate_to: localhost
 
-    - name: Add Foo application
-      ansible.platform.application:
-        gateway_hostname: "{{ awx_host }}"
-        gateway_username: "{{ awx_user }}"
-        gateway_password: "{{ awx_password }}"
+    - name: "Delete the Authentication Token used"
+      ansible.builtin.uri:
+        url: "https://{{ awx_host }}{{aap_oauthtoken_url }}"
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+        method: DELETE
+        force_basic_auth: true
         validate_certs: false
-        name: "Prueba"
-        description: "Prueba"
-        organization: "Default"
-        state: present
-        authorization_grant_type: password
-        client_type: public
-        app_url: http://example.com
-      register: application
-
-    - name: Display the newly created token (SAVE THIS!)
-      debug:
-        msg: "{{ application.client_id }}"
+        status_code: 204
+      when: aap_oauthtoken_url is defined
 
     # --- 0.3 Gitea PAT Creation (using URI)
     - name: Create PAT in GITEA for lab-user
@@ -234,44 +222,3 @@
     - name: Display the newly created token (SAVE THIS!)
       debug:
         msg: "{{ pat_creation_result_gitea.json.sha1 }}"
-
-
-    - name: 3.1 Crear el nuevo repositorio vacío en Gitea (API)
-      ansible.builtin.uri:
-        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/user/repos"
-        method: POST
-        headers:
-          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
-        body_format: json
-        body:
-          name: "Prueba"
-          owner: "{{ gitea_username }}"
-          private: false
-        status_code: [201]
-        validate_certs: "{{crc_validate_certs}}"
-      register: gitea_create_result
-
-    - name: 3.2 Establecer URL final para Gitea
-      ansible.builtin.set_fact:
-        repo_final_url: "{{ gitea_create_result.json.html_url }}"
-      when: gitea_create_result is succeeded
-
-    - name: 3.3 Crear Webhook en Gitea (API)
-      ansible.builtin.uri:
-        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/repos/{{ gitea_username }}/Prueba/hooks"
-        method: POST
-        headers:
-          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
-        body_format: json
-        body:
-          type: "gogs"
-          config:
-            url: "https://example-ansible-automation-platform.apps-crc.testing/api/controller/v2/job_templates/7/launch/"
-            content_type: "json"
-            secret: "{{ awx_token.ansible_facts.aap_token.token }}"
-          authorization_header: "Bearer {{ awx_token.ansible_facts.aap_token.token }}"
-          events: ["push"]
-          active: true
-        status_code: [201]
-        validate_certs: "{{crc_validate_certs}}"
-      when: gitea_create_result is succeeded

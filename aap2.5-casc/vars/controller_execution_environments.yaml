@@ -15,9 +15,11 @@ controller_execution_environments:
   - name: EE_AAP_2.5_Filetree_dispatch
     description: !unsafe
     image: quay.io/adelahoz/ee_aap_2.5_filetree_dispatch:latest
+    credential: "quay.io"
     pull: ""
-  - name: EE_AAP_2.5_Livdecycle
+  - name: EE_AAP_2.5_Livecycle
     description: !unsafe
     image: quay.io/adelahoz/ee_aap_2.5_livecycle:latest
     pull: ""
+    credential: "quay.io"
 ...
