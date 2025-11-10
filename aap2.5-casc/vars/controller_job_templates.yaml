@@ -46,7 +46,7 @@ controller_templates:
   - name: "inizializer-project-playbook"
     description: ""
     organization: "Default"
-    project: "repository_inicializer_github"
+    project: "repository_inicializer"
     inventory: "Demo Inventory"
     playbook: "inizializer-project-playbook.yaml"
     scm_branch: ""

@@ -42,7 +42,7 @@ controller_projects:
   #   allow_override: "False"
   #   update_project: "False"
   #   timeout: "0"
-  - name: "repository_inicializer_github"
+  - name: "repository_inicializer"
     description: ""
     organization: "Default"
     scm_type: "git"
