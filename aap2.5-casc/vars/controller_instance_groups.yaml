@@ -1,0 +1,12 @@
+---
+controller_instance_groups:
+  # - name: "controlplane"
+  #   policy_instance_minimum: "0"
+  #   policy_instance_percentage: "100"
+  #   instances:
+  #     - "awx-demo-task-846886fd97-lxqvz"
+  - name: "default"
+    policy_instance_minimum: "0"
+    policy_instance_percentage: "100"
+    instances:
+...

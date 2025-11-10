@@ -1,0 +1,11 @@
+---
+aap_user_accounts:
+  - username: "admin"
+    password: "admin"
+    email: "admin@example.com"
+    first_name: ""
+    last_name: ""
+    auditor: "False"
+    superuser: "True"
+    update_secrets: false
+...

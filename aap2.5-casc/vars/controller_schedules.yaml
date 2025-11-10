@@ -1,0 +1,75 @@
+---
+controller_schedules:
+  - name: "Cleanup Job Schedule"
+    description: "Automatically Generated Schedule"
+    enabled: true
+    unified_job_template: "Cleanup Job Details"
+    dtstart: "2025-11-02T12:43:24Z"
+    dtend: ""
+    timezone: "UTC"
+    rrule: "DTSTART:20251028T124324Z RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=SU"
+    extra_data:
+      days: '120'
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+  - name: "Cleanup Activity Schedule"
+    description: "Automatically Generated Schedule"
+    enabled: true
+    unified_job_template: "Cleanup Activity Stream"
+    dtstart: "2025-10-28T12:43:24Z"
+    dtend: ""
+    timezone: "UTC"
+    rrule: "DTSTART:20251028T124324Z RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=TU"
+    extra_data:
+      days: '355'
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+  - name: "Cleanup Expired Sessions"
+    description: "Cleans out expired browser sessions"
+    enabled: true
+    unified_job_template: "Cleanup Expired Sessions"
+    dtstart: "2025-10-28T12:44:33Z"
+    dtend: ""
+    timezone: "UTC"
+    rrule: "DTSTART:20251028T124433Z RRULE:FREQ=WEEKLY;INTERVAL=1"
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+  - name: "Cleanup Expired OAuth 2 Tokens"
+    description: "Removes expired OAuth 2 access and refresh tokens"
+    enabled: true
+    unified_job_template: "Cleanup Expired OAuth 2 Tokens"
+    dtstart: "2025-10-28T12:44:33Z"
+    dtend: ""
+    timezone: "UTC"
+    rrule: "DTSTART:20251028T124433Z RRULE:FREQ=WEEKLY;INTERVAL=1"
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+...

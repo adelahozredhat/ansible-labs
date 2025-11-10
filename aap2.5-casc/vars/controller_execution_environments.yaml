@@ -1,0 +1,23 @@
+---
+controller_execution_environments:
+  - name: Minimal execution environment
+    description: !unsafe
+    image: registry.redhat.io/ansible-automation-platform-25/ee-minimal-rhel8@sha256:7df6b485ae4f53c513ca67dcc44109f8b80e812a8d9069c70fca08bada37b531
+    pull: ""
+  - name: Default execution environment
+    description: !unsafe
+    image: registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel8@sha256:cb92687c7b7926d06e1683b07fbe5dc10fc22f6c052fb1dface041ef84c1f2cd
+    pull: ""
+  - name: Control Plane Execution Environment
+    description: !unsafe
+    image: registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel8@sha256:cb92687c7b7926d06e1683b07fbe5dc10fc22f6c052fb1dface041ef84c1f2cd
+    pull: ""
+  - name: EE_AAP_2.5_Filetree_dispatch
+    description: !unsafe
+    image: quay.io/adelahoz/ee_aap_2.5_filetree_dispatch:latest
+    pull: ""
+  - name: EE_AAP_2.5_Livdecycle
+    description: !unsafe
+    image: quay.io/adelahoz/ee_aap_2.5_livecycle:latest
+    pull: ""
+...
