@@ -35,8 +35,8 @@ spec:
   # - repo: https://github.com/adelahozredhat/aap-inventory-filters-hosts.git
   #   name: aap-inventory-filters-hosts
   #   private: false
-  - repo: https://github.com/adelahozredhat/template-ansible-playbooks.git
-    name: template-ansible-playbooks
+  - repo: https://github.com/adelahozredhat/template-minimal-ansible-playbooks.git
+    name: template-minimal-ansible-playbooks
     private: false
   - repo: https://github.com/adelahozredhat/repository-initializer-ansible.git
     name: repository-initializer-ansible
