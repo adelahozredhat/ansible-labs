@@ -46,9 +46,9 @@ controller_templates:
   - name: "inizializer-project-playbook"
     description: ""
     organization: "Default"
-    project: "ansible_labs"
+    project: "repository_inicializer"
     inventory: "Demo Inventory"
-    playbook: "project-inicializer-playbooks/inizializer-project-playbook.yaml"
+    playbook: "inizializer-project-playbook.yaml"
     scm_branch: ""
     forks: 0
     limit: ""
@@ -61,6 +61,7 @@ controller_templates:
       - "gmail-smtp"
       - "slack"
       - "TEams"
+      - "aap_login"
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -86,7 +87,7 @@ controller_templates:
     host_config_key: ""
     survey_enabled: true
     survey_spec:
-      name: ""
+      name: "inizializer-project-playbook"
       spec:
         - max: 1024
           min: 0
@@ -97,7 +98,7 @@ controller_templates:
             - !unsafe "gitlab"
           required: True
           variable: tipo_repositorio
-          new_question: False
+          new_question: True
           question_name: Seleccione el repositorio en el que quiere crear el repositorio de playbook
           question_description: !unsafe "Template Repository for playbooks"
         - max: 1024
@@ -105,7 +106,7 @@ controller_templates:
           type: text
           required: True
           variable: grupo
-          new_question: False
+          new_question: True
           question_name: Grupo para el nuevo repositorio
           question_description: !unsafe "Grupo para el nuevo repositorio"
         - max: 1024
@@ -113,7 +114,7 @@ controller_templates:
           type: text
           required: True
           variable: repo_nuevo
-          new_question: False
+          new_question: True
           question_name: Nombre nuevo repositorio
           question_description: !unsafe "Nombre nuevo repositorio"
         - max: 1024
@@ -123,11 +124,410 @@ controller_templates:
             - !unsafe "email"
             - !unsafe "slack"
             - !unsafe "teams"
+          default: ""
           required: True
           variable: canales_comunicacion
-          new_question: False
+          new_question: True
           question_name: Por que canales quieres notificar la creacción
           question_description: !unsafe "quieres notificar la creacción"
+      description: ""
+    become_enabled: false
+    diff_mode: false
+    webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_casc_filetree"
+    description: ""
+    organization: "Default"
+    project: "repository_casc_awx"
+    inventory: "Demo Inventory"
+    playbook: "playbook-filetree.yaml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "gitea"
+      - "aap_login"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AWX_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    become_enabled: false
+    diff_mode: false
+    webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_casc_dispath"
+    description: ""
+    organization: "Default"
+    project: "repository_casc_awx"
+    inventory: "Demo Inventory"
+    playbook: "playbook-dispatch-general.yml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "aap_login"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AWX_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: true
+    survey_spec:
+      name: "playbook_casc_dispath"
+      spec:
+        - max: 1024
+          min: 0
+          type: multiplechoice
+          choices:
+            - !unsafe "dev"
+            - !unsafe "pre"
+            - !unsafe "pro"
+          required: True
+          variable: environment
+          new_question: True
+          question_name: environment
+          question_description: !unsafe "environment"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: slack_token
+          new_question: True
+          question_name: slack_token
+          question_description: !unsafe "slack_token"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: slack_channel
+          new_question: True
+          question_name: slack_channel
+          question_description: !unsafe "slack_channel"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: gmail_smtp_user
+          new_question: True
+          question_name: gmail_smtp_user
+          question_description: !unsafe "gmail_smtp_user"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: gmail_smtp_password
+          new_question: True
+          question_name: gmail_smtp_password
+          question_description: !unsafe "gmail_smtp_password"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: git_token
+          new_question: True
+          question_name: git_token
+          question_description: !unsafe "git_token"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: container_registry_quayio_password
+          new_question: True
+          question_name: container_registry_quayio_password
+          question_description: !unsafe "container_registry_quayio_password"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: container_registry_quayio_username
+          new_question: True
+          question_name: container_registry_quayio_username
+          question_description: !unsafe "container_registry_quayio_username"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_url_hub
+          new_question: True
+          question_name: automation_url_hub
+          question_description: !unsafe "automation_url_hub"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_sso_hub
+          new_question: True
+          question_name: automation_sso_hub
+          question_description: !unsafe "automation_sso_hub"
+        - max: 1024
+          min: 0
+          type: password
+          required: True
+          variable: automation_token_hub
+          new_question: True
+          question_name: automation_token_hub
+          question_description: !unsafe "automation_token_hub"
+      description: ""
+    become_enabled: false
+    diff_mode: false
+    webhook_service: ""
+    prevent_instance_group_fallback: false
+  - name: "playbook_livecycle"
+    description: ""
+    organization: "Default"
+    project: "repository_livecycle_playbooks"
+    inventory: "Demo Inventory"
+    playbook: "playbook-test.yaml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - "gitea"
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AWX_Livecycle
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    become_enabled: false
+    diff_mode: false
+    webhook_service: "github"
+    prevent_instance_group_fallback: false
+  - name: "playbook-casc-jobtemplate"
+    description: ""
+    organization: "Default"
+    project: "repository_casc_awx"
+    inventory: "Demo Inventory"
+    playbook: "playbook-dispatch-and-generate-jobtemplate.yml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    job_slice_count: 1
+    use_fact_cache: false
+    credentials:
+      - aap_login
+      - gitea
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AWX_Filetree_dispatch
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    survey_spec:
+      name: ""
+      spec:
+        - max: 5000
+          min: 0
+          type: textarea
+          default: !unsafe |-
+            controller_templates:
+              - name: "Demo Job Template"
+                description: ""
+                organization: "Default"
+                project: "Demo Project"
+                inventory: "Demo Inventory"
+                playbook: "hello_world.yml"
+                scm_branch: ""
+                forks: 0
+                limit: ""
+                verbosity: 0
+                job_type: "run"
+                job_slice_count: 1
+                use_fact_cache: false
+                credentials:
+                  - "Demo Credential"
+                allow_simultaneous: false
+                ask_scm_branch_on_launch: false
+                ask_diff_mode_on_launch: false
+                ask_tags_on_launch: false
+                ask_skip_tags_on_launch: false
+                ask_job_type_on_launch: false
+                ask_verbosity_on_launch: false
+                ask_variables_on_launch: false
+                ask_inventory_on_launch: false
+                ask_limit_on_launch: false
+                ask_credential_on_launch: false
+                ask_execution_environment_on_launch: false
+                ask_labels_on_launch: false
+                ask_forks_on_launch: false
+                ask_job_slice_count_on_launch: false
+                ask_timeout_on_launch: false
+                ask_instance_groups_on_launch: false
+                job_tags: ""
+                force_handlers: false
+                skip_tags: ""
+                start_at_task: ""
+                timeout: 0
+                host_config_key: ""
+                survey_enabled: false
+                become_enabled: false
+                diff_mode: false
+                webhook_service: ""
+                prevent_instance_group_fallback: false
+          required: True
+          variable: controller_templates_vars
+          new_question: True
+          question_name: !unsafe controller_templates_vars
+          question_description: !unsafe controller_templates_vars
+        - max: 5000
+          min: 0
+          type: textarea
+          default: !unsafe |-
+            controller_projects:
+              - name: "Demo Project"
+                description: ""
+                organization: "Default"
+                scm_type: "git"
+                scm_url: "https://github.com/ansible/ansible-tower-samples"
+                scm_branch: ""
+                scm_clean: "False"
+                scm_delete_on_update: "False"
+                scm_update_on_launch: "False"
+                scm_update_cache_timeout: "0"
+                scm_refspec: ""
+                allow_override: "False"
+                update_project: "False"
+                timeout: "0"
+              - name: "repository_inicializer"
+                description: ""
+                organization: "Default"
+                scm_type: "git"
+                scm_url: "https://simple-gitea-ocs-gitea.apps-crc.testing/lab-user/repository-initializer-ansible.git"
+                scm_branch: ""
+                scm_clean: "False"
+                scm_delete_on_update: "False"
+                scm_update_on_launch: "False"
+                scm_update_cache_timeout: "0"
+                scm_refspec: ""
+                allow_override: "False"
+                update_project: "False"
+                timeout: "0"
+          required: True
+          variable: controller_projects_vars
+          new_question: True
+          question_name: !unsafe controller_projects_vars
+          question_description: !unsafe controller_projects_vars
+        - max: 5000
+          min: 0
+          type: textarea
+          default: !unsafe |-
+            controller_schedules:
+              - name: "Cleanup Job Schedule"
+                description: "Automatically Generated Schedule"
+                enabled: true
+                unified_job_template: "Cleanup Job Details"
+                dtstart: "2025-11-02T12:43:24Z"
+                dtend: ""
+                timezone: "UTC"
+                rrule: "DTSTART:20251028T124324Z RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=SU"
+                extra_data:
+                  days: '120'
+                scm_branch: ""
+                forks: 0
+                job_slice_count: 0
+                timeout: 0
+                job_type: ""
+                job_tags: ""
+                skip_tags: ""
+                limit: ""
+                verbosity: 0
+          required: True
+          variable: controller_schedules_vars
+          new_question: True
+          question_name: !unsafe controller_schedules_vars
+          question_description: !unsafe controller_schedules_vars
       description: ""
     become_enabled: false
     diff_mode: false

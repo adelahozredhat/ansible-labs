@@ -12,4 +12,12 @@ controller_execution_environments:
     description: ""
     image: "quay.io/ansible/awx-ee:24.6.1"
     pull: ""
+  - name: "EE_AWX_Livecycle"
+    description: ""
+    image: "quay.io/adelahoz/ee_awx_livecycle:latest"
+    pull: ""
+  - name: "EE_AWX_Filetree_dispatch"
+    description: ""
+    image: "quay.io/adelahoz/ee_awx_filetree_dispatch:latest"
+    pull: ""
 ...

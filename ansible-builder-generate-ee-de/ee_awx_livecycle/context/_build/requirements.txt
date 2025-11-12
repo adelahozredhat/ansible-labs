@@ -1,0 +1,7 @@
+ansible-core
+ansible-runner
+ansible-lint
+yamllint
+ansible-sign
+molecule
+gnupg

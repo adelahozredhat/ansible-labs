@@ -367,9 +367,9 @@ controller_templates:
   - name: "playbook-casc-jobtemplate"
     description: ""
     organization: "Default"
-    project: "repository_livecycle_playbooks"
+    project: "repository_casc_aap"
     inventory: "Demo Inventory"
-    playbook: "playbook-casc.yaml"
+    playbook: "playbook-dispatch-and-generate-jobtemplate.yml"
     scm_branch: ""
     forks: 0
     limit: ""

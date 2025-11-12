@@ -15,6 +15,7 @@
     - vars/controller_schedules.yaml
     - vars/controller_settings.yaml
     - vars/controller_users.yaml
+    - ../../vaults/vault.yml
   vars:
     controller_configuration_projects_async_retries: 120
     controller_configuration_projects_async_delay: 2

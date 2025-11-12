@@ -33,15 +33,6 @@
       shell: oc whoami --show-token
       register: token
 
-    - name: Install Gitea Operator
-      kubernetes.core.k8s:
-        state: present
-        host: "{{ crc_url_api_client }}"
-        validate_certs: "{{ crc_validate_certs }}"
-        api_key: "{{ token.stdout }}"
-        definition: "{{ lookup('kubernetes.core.kustomize', dir='../repository-gitea-for-labs/gitea/') }}"
-      register: step1
-
     - name: Install AWX Operator
       kubernetes.core.k8s:
         state: present
@@ -62,8 +53,66 @@
 
     - name: Wait for application deployment to stabilize (sleep 5m)
       ansible.builtin.pause:
-        minutes: 5
-      when: step1.changed or step2.changed or step3.changed
+        minutes: 3
+      when: step2.changed or step3.changed
+
+    - name: Install Gitea Operator
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        validate_certs: "{{ crc_validate_certs }}"
+        api_key: "{{ token.stdout }}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='../repository-gitea-for-labs/gitea/') }}"
+      register: step1
+      until: step1.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')
+      retries: "10"
+      delay: "15"
+
+    - name: Report Operator Status
+      ansible.builtin.debug:
+        msg: "{{step1.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')}}"
+
+    - name: Get ClusterServiceVersion (CSV) status
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: ClusterServiceVersion
+        name: "{{step1.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')}}"
+        namespace: "gitea-operator"
+      register: csv_status_check
+      until: csv_status_check.resources| json_query('[?status.phase]| [0].status.phase') == "Succeeded"
+      retries: "10"
+      delay: "15"
+
+    - name: Report Operator Status
+      ansible.builtin.debug:
+        msg: "{{csv_status_check.resources| json_query('[?status.phase]| [0].status.phase')}}"
+
+    - name: Install DevSpaces Operator
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: "../devspaces/devspace.yaml"
+      register: step2
+      until: step2.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')
+      retries: "10"
+      delay: "15"
+
+    - name: Report Operator Status
+      ansible.builtin.debug:
+        msg: "{{step2.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')}}"
+
+    - name: Get ClusterServiceVersion (CSV) status
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: ClusterServiceVersion
+        name: "{{step2.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')}}"
+        namespace: "devspace"
+      register: csv_status_check
+      until: csv_status_check.resources| json_query('[?status.phase]| [0].status.phase') == "Succeeded"
+      retries: "10"
+      delay: "15"
 
     - name: 2. Create ConfigMap in Gitea Namespace from Local File
       # Create the ConfigMap using the definition argument and file lookup
@@ -98,6 +147,18 @@
         validate_certs: "{{crc_validate_certs}}"
         src: ../repository-gitea-for-labs/gitea/gitea.yaml
       register: step4
+      
+    - name: ✅ Wait for the URL to be available (HTTP 200)
+      ansible.builtin.uri:
+        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/"
+        method: GET
+        status_code: 200 # The desired HTTP status code
+        validate_certs: false # Set to true if using proper SSL/TLS certificates
+      register: app_status_check
+      until: app_status_check.status == 200
+      retries: "10"
+      delay: "15"
+      delegate_to: localhost
 
     - name: Install AWX Instance
       kubernetes.core.k8s:
@@ -107,6 +168,18 @@
         validate_certs: "{{crc_validate_certs}}"
         src: awx/awx-demo.yaml
       register: step5
+      
+    - name: ✅ Wait for the URL to be available (HTTP 200)
+      ansible.builtin.uri:
+        url: "https://awx-demo-awx.apps-crc.testing/"
+        method: GET
+        status_code: 200 # The desired HTTP status code
+        validate_certs: false # Set to true if using proper SSL/TLS certificates
+      register: app_status_check
+      until: app_status_check.status == 200
+      retries: "45"
+      delay: "15"
+      delegate_to: localhost
 
     - name: Install EDA AWX Instance
       kubernetes.core.k8s:
@@ -116,31 +189,39 @@
         validate_certs: "{{crc_validate_certs}}"
         src: awx-eda/eda.yaml
       register: step6
-
-    - name: Wait for application deployment to stabilize (sleep 10m)
-      ansible.builtin.pause:
-        minutes: 10
-      when: step3.changed or step4.changed or step5.changed
-
-    - name: Create the Access Token for the Application in AWX
-      awx.awx.token:
-        controller_host: "{{ awx_host }}"
-        controller_username: "{{ awx_user }}"
-        controller_password: "{{ awx_password }}"
-        validate_certs: false
-        
-        # Link the token to the application
-        scope: "write"
-        description: "PAT for lab"
-        state: present
-      register: awx_token
       
-    # 3. Display the sensitive token value (USE WITH CAUTION)
-    - name: Display the newly created token (SAVE THIS!)
-      ansible.builtin.debug:
-        msg: "The application token is: {{ awx_token.ansible_facts.controller_token.token }}"
-        # Note: The token value is only returned once upon creation!
-        # DO NOT store this in plain text! Use Ansible Vault or a secrets manager.
+    - name: ✅ Wait for the URL to be available (HTTP 200)
+      ansible.builtin.uri:
+        url: "https://my-eda-ui-eda.apps-crc.testing/"
+        method: GET
+        status_code: 200 # The desired HTTP status code
+        validate_certs: false # Set to true if using proper SSL/TLS certificates
+      register: app_status_check
+      until: app_status_check.status == 200
+      retries: "45"
+      delay: "15"
+      delegate_to: localhost
+
+    - name: Install Devspaces Instance
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: ../devspaces/devspaces-instance.yaml
+      register: step6
+      
+    - name: ✅ Wait for the URL to be available (HTTP 200)
+      ansible.builtin.uri:
+        url: "https://devspaces.apps-crc.testing/"
+        method: GET
+        status_code: 200 # The desired HTTP status code
+        validate_certs: false # Set to true if using proper SSL/TLS certificates
+      register: app_status_check
+      until: app_status_check.status == 200
+      retries: "45"
+      delay: "15"
+      delegate_to: localhost
 
     # --- 0.3 Gitea PAT Creation (using URI)
     - name: Create PAT in GITEA for lab-user
@@ -162,43 +243,3 @@
       debug:
         msg: "{{ pat_creation_result_gitea.json.sha1 }}"
 
-
-    - name: 3.1 Crear el nuevo repositorio vacío en Gitea (API)
-      ansible.builtin.uri:
-        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/user/repos"
-        method: POST
-        headers:
-          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
-        body_format: json
-        body:
-          name: "Prueba"
-          owner: "{{ gitea_username }}"
-          private: false
-        status_code: [201]
-        validate_certs: "{{crc_validate_certs}}"
-      register: gitea_create_result
-
-    - name: 3.2 Establecer URL final para Gitea
-      ansible.builtin.set_fact:
-        repo_final_url: "{{ gitea_create_result.json.html_url }}"
-      when: gitea_create_result is succeeded
-
-    - name: 3.3 Crear Webhook en Gitea (API)
-      ansible.builtin.uri:
-        url: "https://simple-gitea-ocs-gitea.apps-crc.testing/api/v1/repos/{{ gitea_username }}/Prueba/hooks"
-        method: POST
-        headers:
-          Authorization: "token {{ pat_creation_result_gitea.json.sha1 }}" # <--- USANDO EL NUEVO PAT
-        body_format: json
-        body:
-          type: "gogs"
-          config:
-            url: "https://awx-demo-awx.apps-crc.testing/api/v2/job_templates/7/launch"
-            content_type: "json"
-            secret: "{{ awx_token.ansible_facts.controller_token.token }}"
-          authorization_header: "Bearer {{ awx_token.ansible_facts.controller_token.token }}"
-          events: ["push"]
-          active: true
-        status_code: [201]
-        validate_certs: "{{crc_validate_certs}}"
-      when: gitea_create_result is succeeded
