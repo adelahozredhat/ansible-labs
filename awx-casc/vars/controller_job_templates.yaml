@@ -562,7 +562,6 @@ controller_templates:
     ask_limit_on_launch: false
     ask_credential_on_launch: false
     ask_execution_environment_on_launch: false
-    execution_environment: EE_AWX_Livecycle
     ask_labels_on_launch: false
     ask_forks_on_launch: false
     ask_job_slice_count_on_launch: false
@@ -705,12 +704,12 @@ controller_templates:
     diff_mode: false
     webhook_service: "github"
     prevent_instance_group_fallback: false
-  - name: "playbook_livecycle_molecule"
+  - name: "playbook_livecycle_notification_execution"
     description: ""
     organization: "Default"
     project: "repository_livecycle_playbooks"
     inventory: "Demo Inventory"
-    playbook: "playbook-molecule.yaml"
+    playbook: "playbook-notification-execution.yaml"
     scm_branch: ""
     forks: 0
     limit: ""
@@ -734,7 +733,6 @@ controller_templates:
     ask_limit_on_launch: false
     ask_credential_on_launch: false
     ask_execution_environment_on_launch: false
-    execution_environment: EE_AWX_Livecycle
     ask_labels_on_launch: false
     ask_forks_on_launch: false
     ask_job_slice_count_on_launch: false
@@ -762,6 +760,8 @@ controller_templates:
     limit: ""
     verbosity: 0
     job_type: "run"
+    credentials:
+      - "gitea"
     job_slice_count: 1
     use_fact_cache: false
     allow_simultaneous: false
