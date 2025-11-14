@@ -20,3 +20,13 @@ spec:
   admin_user: admin
   admin_password_secret: my-awx-admin-pass 
   admin_email: admin@example.com
+  # ... other specs
+  # extra_settings:
+  #   - setting: AWX_TASK_ENV
+  #     # The '>' symbol is important here. It tells YAML to treat the following
+  #     # lines as a multiline string and include the newlines and indentation,
+  #     # which is necessary for the Python dictionary format.
+  #     value: >
+  #       {
+  #         "ANSIBLE_COLLECTIONS_PATH": "/runner/requirements_collections:~/.ansible/collections:/usr/share/ansible/collections"
+  #       }

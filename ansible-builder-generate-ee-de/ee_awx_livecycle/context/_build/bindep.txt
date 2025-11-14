@@ -1,6 +1,5 @@
 systemd-devel
-python3-devel
+python3.11-devel
 libxml2-devel
 libxslt-devel
 gcc
-python3

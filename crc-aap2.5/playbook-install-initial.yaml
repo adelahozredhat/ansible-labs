@@ -41,7 +41,7 @@
         validate_certs: "{{crc_validate_certs}}"
         src: automation-platform-install-operator.yaml
       register: step
-      until: step.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')
+      until: step.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV') is defined and (step.result.results | json_query('[?result.status.currentCSV] | [0].result.status.currentCSV')) is not none
       retries: "10"
       delay: "15"
 
@@ -72,7 +72,7 @@
         api_key: "{{ token.stdout }}"
         definition: "{{ lookup('kubernetes.core.kustomize', dir='../repository-gitea-for-labs/gitea/') }}"
       register: step1
-      until: step1.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV')
+      until: step1.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV') is defined and (step1.result.results | json_query('[?result.status.currentCSV] | [0].result.status.currentCSV')) is not none
       retries: "10"
       delay: "15"
 

@@ -1,7 +1,2 @@
-ansible-core
-ansible-runner
-ansible-lint
-yamllint
-ansible-sign
-molecule
+ansible-dev-tools==24.12.0
 gnupg
