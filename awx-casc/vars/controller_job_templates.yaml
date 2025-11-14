@@ -547,7 +547,7 @@ controller_templates:
     verbosity: 0
     job_type: "run"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     credentials:
       - "gitea"
     allow_simultaneous: false
@@ -576,7 +576,6 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
   - name: "playbook_livecycle_ansiblelint"
     description: ""
@@ -590,7 +589,7 @@ controller_templates:
     verbosity: 0
     job_type: "run"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -618,7 +617,6 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
   - name: "playbook_livecycle_yamlint"
     description: ""
@@ -632,7 +630,7 @@ controller_templates:
     verbosity: 0
     job_type: "run"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -660,7 +658,6 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
   - name: "playbook_livecycle_molecule"
     description: ""
@@ -674,7 +671,7 @@ controller_templates:
     verbosity: 0
     job_type: "run"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -702,7 +699,6 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
   - name: "playbook_livecycle_notification_execution"
     description: ""
@@ -720,7 +716,7 @@ controller_templates:
       - "slack"
       - "TEams"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -747,7 +743,6 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
   - name: "playbook_livecycle_sign"
     description: ""
@@ -763,7 +758,7 @@ controller_templates:
     credentials:
       - "gitea"
     job_slice_count: 1
-    use_fact_cache: false
+    use_fact_cache: true
     allow_simultaneous: false
     ask_scm_branch_on_launch: false
     ask_diff_mode_on_launch: false
@@ -791,6 +786,5 @@ controller_templates:
     survey_enabled: false
     become_enabled: false
     diff_mode: false
-    webhook_service: "github"
     prevent_instance_group_fallback: false
 ...

@@ -1,0 +1,64 @@
+---
+controller_workflows:
+  - name: "playbook_livecycle"
+    description: !unsafe 'playbook_livecycle'
+    organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+    simplified_workflow_nodes:
+      - identifier: "4b8a170f-71b1-43f5-8200-5a400d754197"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_yamlint"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "False"
+        always_nodes:
+          - "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
+      - identifier: "38d1c1ff-2b93-4058-b2b2-4078b71b19eb"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_molecule"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "False"
+        always_nodes:
+          - "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
+      - identifier: "87e1701c-de95-4bee-8592-d5c5d8887e7f"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_downloadrepo"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "True"
+        always_nodes:
+          - "38d1c1ff-2b93-4058-b2b2-4078b71b19eb"
+          - "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
+          - "4b8a170f-71b1-43f5-8200-5a400d754197"
+      - identifier: "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_ansiblelint"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "False"
+        always_nodes:
+          - "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
+      - identifier: "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_notification_execution"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "False"
+        success_nodes:
+          - "d5d8a643-a3f7-4837-9ab1-e9b96d1f44aa"
+      - identifier: "d5d8a643-a3f7-4837-9ab1-e9b96d1f44aa"
+        workflow_job_template: "playbook_livecycle"
+        unified_job_template: "playbook_livecycle_sign"
+        limit: ""
+        organization: "ToDo: The WF 'playbook_livecycle' must belong to an organization"
+        all_parents_must_converge: "False"
+    ask_variables_on_launch: "False"
+    allow_simultaneous: "False"
+    scm_branch: ""
+    limit: ""
+    ask_limit_on_launch: false
+    ask_inventory_on_launch: false
+    webhook_service: "github"
+    extra_vars: ""
+    survey_enabled: false
+...
