@@ -15,6 +15,7 @@
     - vars/controller_schedules.yaml
     - vars/controller_settings.yaml
     - vars/controller_users.yaml
+    - vars/workflow_job_templates.yaml
     - ../../vaults/vault.yml
   vars:
     controller_configuration_projects_async_retries: 120
@@ -23,6 +24,15 @@
     controller_password: "{{ vault_controller_password | default(lookup('env', 'CONTROLLER_PASSWORD')) }}"
     controller_hostname: "{{ vault_controller_hostname | default(lookup('env', 'CONTROLLER_HOST')) }}"
     controller_validate_certs: "{{ vault_controller_validate_certs | default(lookup('env', 'CONTROLLER_VERIFY_SSL')) }}"
+    # controller_configuration_secure_logging: false
+    cas_secure_logging: false
+    workflow_job_templates_secure_logging: false
+    controller_configuration_workflow_job_templates_secure_logging: false
+    controller_configuration_secure_logging: false
+    controller_configuration_groups_secure_logging: false
+    no_log: false
+    # controller_configuration_workflows_enforce_defaults: false
+    # no_log: false
 
   pre_tasks:
     - name: "Setup authentication (block)"
@@ -47,7 +57,7 @@
       tags:
         - always
   roles:
-    - {role: infra.controller_configuration.dispatch}
+    - {role: dispatch}
 
   post_tasks:
     - name: "Delete the Authentication Token used"
