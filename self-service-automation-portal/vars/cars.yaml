@@ -1,0 +1,11 @@
+openshift_namespace: "self-service-portal"
+aap_host_url: "https://my-aap.example.com"
+oauth_client_id: "YOUR_OAUTH_CLIENT_ID"
+oauth_client_secret: "YOUR_OAUTH_CLIENT_SECRET"
+aap_api_token: "YOUR_AAP_READ_TOKEN"
+github_token: "YOUR_GITHUB_PAT"        # or GitLab
+chart_name: "redhat-rhaap-portal"
+chart_version: "x.y.z"   # portal chart version
+cluster_router_base: "apps.mycluster.example.com"
+aap_org: "Default"       # or your AAP org
+disable_telemetry: false

@@ -588,6 +588,8 @@ controller_templates:
     limit: ""
     verbosity: 0
     job_type: "run"
+    credentials:
+      - "gitea"
     job_slice_count: 1
     use_fact_cache: true
     allow_simultaneous: false
@@ -628,6 +630,8 @@ controller_templates:
     limit: ""
     verbosity: 0
     job_type: "run"
+    credentials:
+      - "gitea"
     job_slice_count: 1
     use_fact_cache: true
     allow_simultaneous: false
@@ -669,6 +673,8 @@ controller_templates:
     limit: ""
     verbosity: 0
     job_type: "run"
+    credentials:
+      - "gitea"
     job_slice_count: 1
     use_fact_cache: true
     allow_simultaneous: false
@@ -756,6 +762,50 @@ controller_templates:
     job_type: "run"
     credentials:
       - "gitea"
+    job_slice_count: 1
+    use_fact_cache: true
+    allow_simultaneous: false
+    ask_scm_branch_on_launch: false
+    ask_diff_mode_on_launch: false
+    ask_tags_on_launch: false
+    ask_skip_tags_on_launch: false
+    ask_job_type_on_launch: false
+    ask_verbosity_on_launch: false
+    ask_variables_on_launch: false
+    ask_inventory_on_launch: false
+    ask_limit_on_launch: false
+    ask_credential_on_launch: false
+    ask_execution_environment_on_launch: false
+    execution_environment: EE_AWX_Livecycle
+    ask_labels_on_launch: false
+    ask_forks_on_launch: false
+    ask_job_slice_count_on_launch: false
+    ask_timeout_on_launch: false
+    ask_instance_groups_on_launch: false
+    job_tags: ""
+    force_handlers: false
+    skip_tags: ""
+    start_at_task: ""
+    timeout: 0
+    host_config_key: ""
+    survey_enabled: false
+    become_enabled: false
+    diff_mode: false
+    prevent_instance_group_fallback: false
+  - name: "playbook_livecycle_playbook_dispatch_and_generate_jobtemplate"
+    description: ""
+    organization: "Default"
+    project: "repository_livecycle_playbooks"
+    inventory: "Demo Inventory"
+    playbook: "playbook-dispatch-and-generate-jobtemplate.yaml"
+    scm_branch: ""
+    forks: 0
+    limit: ""
+    verbosity: 0
+    job_type: "run"
+    credentials:
+      - "gitea"
+      - "aap_login"
     job_slice_count: 1
     use_fact_cache: true
     allow_simultaneous: false

@@ -1,0 +1,80 @@
+- name: Install Ansible Self-Service Automation Portal on OpenShift
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - name: Log into OpenShift
+      shell: |
+        oc project {{ openshift_namespace }} || oc new-project {{ openshift_namespace }}
+      register: oc_project
+      changed_when: "'Already on project' not in oc_project.stdout"
+
+    - name: Create secret for AAP authentication
+      k8s:
+        api_version: v1
+        kind: Secret
+        namespace: "{{ openshift_namespace }}"
+        name: secrets-rhaap-portal
+        data:
+          # Base64-encode values
+          aap-host-url: "{{ aap_host_url | b64encode }}"
+          oauth-client-id: "{{ oauth_client_id | b64encode }}"
+          oauth-client-secret: "{{ oauth_client_secret | b64encode }}"
+          aap-token: "{{ aap_api_token | b64encode }}"
+        type: Opaque
+
+    - name: Create secret for SCM authentication
+      k8s:
+        api_version: v1
+        kind: Secret
+        namespace: "{{ openshift_namespace }}"
+        name: secrets-scm
+        data:
+          github-token: "{{ github_token | b64encode }}"
+        type: Opaque
+
+    - name: (Optional) Create plugin registry - binary secrets for plugin TAR
+      # This is a simplified placeholder: building an image or registry is more involved.
+      debug:
+        msg: "Ensure plugin registry is built and available in OpenShift using the plugin TARs"
+
+    - name: Render Helm values file
+      template:
+        src: helm-values.yml.j2
+        dest: /tmp/portal-values-{{ chart_name }}.yaml
+
+    - name: Install (or upgrade) the self-service portal Helm chart
+      shell: |
+        helm upgrade --install {{ chart_name }} redhat-rhaap-portal \
+          --namespace {{ openshift_namespace }} \
+          --version {{ chart_version }} \
+          -f /tmp/portal-values-{{ chart_name }}.yaml
+      register: helm_out
+
+    - name: Wait for portal deployment to rollout
+      k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        namespace: "{{ openshift_namespace }}"
+        name: "{{ chart_name }}-backstage"
+      register: deploy_info
+      until: deploy_info.resources | length > 0 and deploy_info.resources[0].status.readyReplicas == deploy_info.resources[0].status.replicas
+      retries: 20
+      delay: 15
+
+    - name: Get route to portal
+      shell: oc get route -n {{ openshift_namespace }} -l app.kubernetes.io/name=redhat-developer-hub -o jsonpath='{.items[0].spec.host}'
+      register: portal_route
+
+    - name: Show portal URL
+      debug:
+        msg: "Portal should be available at: https://{{ portal_route.stdout }}"
+
+    - name: Remind to update OAuth redirect URI in AAP
+      debug:
+        msg: >
+          After deployment, update your OAuth app in AAP:
+          Redirect URI must be https://{{ portal_route.stdout }}/api/auth/rhaap/handler/frame

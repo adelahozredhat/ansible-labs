@@ -1,0 +1,19 @@
+redhat-developer-hub:
+  global:
+    clusterRouterBase: "{{ cluster_router_base }}"
+    dynamic:
+      plugins:
+        {% if disable_telemetry %}
+        - disabled: true
+          package: "./dynamic-plugins/dist/backstage-community-plugin-analytics-provider-segment"
+        {% endif %}
+  catalog:
+    providers:
+      rhaap:
+        production:
+          orgs: "{{ aap_org }}"
+
+# Secrets reference
+secrets:
+  rhaapPortal: secrets-rhaap-portal
+  scm: secrets-scm
