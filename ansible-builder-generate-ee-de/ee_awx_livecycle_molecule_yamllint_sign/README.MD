@@ -1,0 +1,2 @@
+ansible-builder build -t quay.io/adelahoz/ee_awx_livecycle_molecule_yamllint_sign:latest
+podman push quay.io/adelahoz/ee_awx_livecycle_molecule_yamllint_sign:latest

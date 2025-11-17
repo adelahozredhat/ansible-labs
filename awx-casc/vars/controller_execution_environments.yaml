@@ -1,8 +1,8 @@
 ---
 controller_execution_environments:
-  - name: "EE_AWX_Livecycle"
+  - name: "EE_AWX_Livecycle_Molecule_Yamlint_Sign"
     description: ""
-    image: "quay.io/adelahoz/ee_awx_livecycle:latest"
+    image: "quay.io/adelahoz/ee_awx_livecycle_molecule_yamllint_sign:latest"
     pull: ""
   - name: "EE_AWX_Filetree_dispatch"
     description: ""
