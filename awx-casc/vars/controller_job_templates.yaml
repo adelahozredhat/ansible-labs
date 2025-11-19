@@ -721,6 +721,7 @@ controller_templates:
       - "gmail-smtp"
       - "slack"
       - "TEams"
+      - "aap_login"
     job_slice_count: 1
     use_fact_cache: true
     allow_simultaneous: false
@@ -746,7 +747,22 @@ controller_templates:
     start_at_task: ""
     timeout: 0
     host_config_key: ""
-    survey_enabled: false
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      spec:
+        - max: 1024
+          min: 0
+          type: multiplechoice
+          choices:
+            - !unsafe "ci"
+            - !unsafe "sign_casc"
+          required: True
+          variable: type_notification
+          new_question: False
+          question_name: type_notification
+          question_description: !unsafe "type_notification"
+      description: ""
     become_enabled: false
     diff_mode: false
     prevent_instance_group_fallback: false

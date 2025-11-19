@@ -1,0 +1,38 @@
+# Nombre de este ruleset
+- name: Lanzar Job Template desde Webhook
+  hosts: localhost
+
+  # --- SECCIÓN DE FUENTES (SOURCES) ---
+  # Define dónde escuchar los eventos.
+  sources:
+    # Utilizamos el plugin de webhook de la colección ansible.eda.
+    - ansible.eda.webhook:
+        # Escucha en todas las interfaces de red.
+        host: 0.0.0.0
+        # El puerto específico que nos has indicado.
+        port: 28100
+        # Opcional: define el endpoint si no quieres el predeterminado /endpoint
+        # endpoint: /awx_trigger
+
+  # --- SECCIÓN DE REGLAS (RULES) ---
+  # Define las condiciones bajo las cuales se ejecutará la acción.
+  rules:
+    - name: Lanzar playbook_casc_filetree
+      # Condición: En este ejemplo, simplemente verificamos que se haya recibido un evento
+      # del webhook (es decir, el webhook se disparó). Puedes añadir condiciones
+      # más específicas si el payload del webhook contiene datos que necesitas evaluar
+      # (ej: event.payload.accion == "deploy").
+      condition: event is not null
+      
+      # Acción a ejecutar cuando la condición se cumple.
+      action:
+        # La acción para lanzar un Job Template en AWX/Automation Controller.
+        # Requiere que EDA esté configurado con una conexión (token) a tu AWX.
+        run_job_template:
+          # El nombre del Job Template en AWX/Automation Controller.
+          name: "playbook_casc_filetree"
+          # Opcional: Nombre de la organización si no es la predeterminada.
+          # organization: "Mi Organización"
+          # Opcional: Variables extra a pasar al Job Template desde el evento.
+          # extra_vars:
+          #   webhook_data: "{{ event.payload }}"

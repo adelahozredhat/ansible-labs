@@ -28,8 +28,8 @@ controller_workflows:
         all_parents_must_converge: "False"
         success_nodes:
           - "4b8a170f-71b1-43f5-8200-5a400d754197"
-          - "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
           - "38d1c1ff-2b93-4058-b2b2-4078b71b19eb"
+          - "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
         failure_nodes:
           - "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
       - identifier: "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
@@ -46,6 +46,8 @@ controller_workflows:
         limit: ""
         organization: "Default"
         all_parents_must_converge: "False"
+        extra_data:
+          type_notification: ci
         success_nodes:
           - "d5d8a643-a3f7-4837-9ab1-e9b96d1f44aa"
       - identifier: "d5d8a643-a3f7-4837-9ab1-e9b96d1f44aa"
@@ -72,6 +74,8 @@ controller_workflows:
         limit: ""
         organization: "Default"
         all_parents_must_converge: "False"
+        extra_data:
+          type_notification: sign_casc
     ask_variables_on_launch: "False"
     allow_simultaneous: "False"
     scm_branch: ""
