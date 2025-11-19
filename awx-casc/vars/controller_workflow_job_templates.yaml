@@ -26,10 +26,12 @@ controller_workflows:
         limit: ""
         organization: "Default"
         all_parents_must_converge: "False"
-        always_nodes:
-          - "38d1c1ff-2b93-4058-b2b2-4078b71b19eb"
-          - "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
+        success_nodes:
           - "4b8a170f-71b1-43f5-8200-5a400d754197"
+          - "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
+          - "38d1c1ff-2b93-4058-b2b2-4078b71b19eb"
+        failure_nodes:
+          - "53b439ea-2b7d-436b-abd0-c9fd67cf76a3"
       - identifier: "fdd9391b-95fa-44ef-a97a-a6fa935dc57d"
         workflow_job_template: "workflow_livecycle"
         unified_job_template: "playbook_livecycle_ansiblelint"

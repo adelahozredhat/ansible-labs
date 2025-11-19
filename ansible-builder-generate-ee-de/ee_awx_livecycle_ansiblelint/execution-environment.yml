@@ -58,9 +58,7 @@ dependencies:
   python:
     - ansible-core
     - ansible-runner
-    - yamllint
-    - ansible-sign
-    - molecule
+    - ansible-lint
     - gnupg
   #   - python-ldap==3.4.4
   #   - XlsxWriter==3.2.0
