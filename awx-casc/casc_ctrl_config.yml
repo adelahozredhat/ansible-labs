@@ -6,9 +6,6 @@
     - vars/controller_credentials.yaml
     - vars/controller_credential_types.yaml
     - vars/controller_execution_environments.yaml
-    - vars/controller_hosts.yaml
-    - vars/controller_instance_groups.yaml
-    - vars/controller_inventories.yaml
     - vars/controller_job_templates.yaml
     - vars/controller_organizations.yaml
     - vars/controller_projects.yaml
