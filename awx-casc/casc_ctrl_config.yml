@@ -7,11 +7,8 @@
     - vars/controller_credential_types.yaml
     - vars/controller_execution_environments.yaml
     - vars/controller_job_templates.yaml
-    - vars/controller_organizations.yaml
     - vars/controller_projects.yaml
-    - vars/controller_schedules.yaml
     - vars/controller_settings.yaml
-    - vars/controller_users.yaml
     - vars/controller_workflow_job_templates.yaml
     - ../../vaults/vault.yml
   vars:

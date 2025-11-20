@@ -76,6 +76,14 @@ controller_workflows:
         all_parents_must_converge: "False"
         extra_data:
           type_notification: sign_casc
+      - identifier: "0c19191e-1c53-4de4-9a31-f320a694708b"
+        workflow_job_template: "workflow_livecycle"
+        unified_job_template: "repository_livecycle_playbooks"
+        limit: ""
+        organization: "Default"
+        all_parents_must_converge: "False"
+        success_nodes:
+          - "87e1701c-de95-4bee-8592-d5c5d8887e7f"
     ask_variables_on_launch: "False"
     allow_simultaneous: "False"
     scm_branch: ""
