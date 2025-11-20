@@ -1,6 +1,6 @@
 ARG EE_BASE_IMAGE="quay.io/ansible/awx-ee:24.6.1"
-ARG PYCMD="/usr/bin/python3"
-ARG PYPKG="python3"
+ARG PYCMD="/usr/bin/python3.11"
+ARG PYPKG="python3.11"
 ARG PKGMGR_PRESERVE_CACHE=""
 ARG ANSIBLE_GALAXY_CLI_COLLECTION_OPTS="--pre"
 ARG ANSIBLE_GALAXY_CLI_ROLE_OPTS=""
@@ -40,7 +40,7 @@ ARG ANSIBLE_INSTALL_REFS
 ARG PKGMGR
 
 RUN $PYCMD -m pip install --no-cache-dir bindep pyyaml packaging
-RUN python3 -m pip install --upgrade pip
+RUN python3.11 -m pip install --upgrade pip
 COPY _build/requirements.txt requirements.txt
 COPY _build/bindep.txt bindep.txt
 RUN $PYCMD /output/scripts/introspect.py introspect --user-pip=requirements.txt --user-bindep=bindep.txt --write-bindep=/tmp/src/bindep.txt --write-pip=/tmp/src/requirements.txt
