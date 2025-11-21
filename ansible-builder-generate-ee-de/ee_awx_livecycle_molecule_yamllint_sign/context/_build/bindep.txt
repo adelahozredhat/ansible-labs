@@ -4,3 +4,6 @@ libxml2-devel
 libxslt-devel
 gcc
 python3
+gnupg2
+rng-tools
+haveged

@@ -53,6 +53,11 @@ dependencies:
     - libxslt-devel 
     - gcc
     - python3
+    # GNUPG: Asegura que el binario principal (gpg/gpg2) esté presente
+    - gnupg2 
+    # Entropía: Mantener ambas opciones instaladas
+    - rng-tools
+    - haveged
   #   - openldap-devel
 
   python:
