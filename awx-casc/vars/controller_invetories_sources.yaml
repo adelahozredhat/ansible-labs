@@ -1,0 +1,50 @@
+---
+controller_inventory_sources:
+  - name: "VCenter"
+    description: ""
+    organization: "Default"
+    source: "vmware"
+    limit: ""
+    source_path: ""
+    source_vars:
+      with_tags: true
+      with_path: true
+      gather_compute_objects: true
+      gather_tags: true
+      gather_host_ids: true
+      properties:
+      - config.name
+      - config.uuid
+      - guest.ipAddress
+      - runtime.powerState
+      - config.hardware.numCPU
+      - config.hardware.memoryMB
+      - config.version
+      - guest.guestFullName
+      - guest.toolsRunningStatus
+      - runtime.connectionState
+      - runtime.bootTime
+      - config.cpuHotAddEnabled
+      - config.memoryHotAddEnabled
+      - config.hardware.numCoresPerSocket
+      - config.annotation
+      - guest.guestFamily
+      - runtime.consolidationNeeded
+      - summary.config.hwVersion
+      - availableField
+      - customValue
+      - summary.customValue
+      - value
+      - config.template
+      compose:
+        ansible_host: config.name + '.pfsnz.dynamic.redhatworkshops.io'
+      filters:
+      - not config.template
+      keyed_groups:
+      - key: summary.runtime.host.name
+        prefix: esxi_host
+    inventory: "VCenter"
+    update_on_launch: "False"
+    overwrite: "True"
+    credential: "VCenter"
+...

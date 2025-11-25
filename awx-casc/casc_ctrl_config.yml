@@ -10,6 +10,8 @@
     - vars/controller_projects.yaml
     - vars/controller_settings.yaml
     - vars/controller_workflow_job_templates.yaml
+    - vars/controller_inventories.yaml
+    - vars/controller_invetories_sources.yaml
     - ../../vaults/vault.yml
   vars:
     controller_configuration_projects_async_retries: 120

@@ -53,6 +53,9 @@ spec:
   - repo: https://github.com/adelahozredhat/vmware-vcenter-management.git
     name: vmware-vcenter-management
     private: false
+  - repo: https://github.com/adelahozredhat/awx-ping-machine-report.git
+    name: awx-ping-machine-report
+    private: false
   # - repo: https://github.com/adelahozredhat/ansible-labs.git
   #   name: ansible-labs
   #   private: false
