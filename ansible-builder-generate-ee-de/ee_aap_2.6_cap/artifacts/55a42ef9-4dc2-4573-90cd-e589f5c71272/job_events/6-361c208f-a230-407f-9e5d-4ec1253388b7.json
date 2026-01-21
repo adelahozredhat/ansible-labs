@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "361c208f-a230-407f-9e5d-4ec1253388b7", "counter": 6, "stdout": "    registry.access.redhat.com/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag", "start_line": 2, "end_line": 3, "runner_ident": "55a42ef9-4dc2-4573-90cd-e589f5c71272", "created": "2026-01-16T14:08:43.616356"}

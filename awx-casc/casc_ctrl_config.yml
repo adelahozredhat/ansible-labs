@@ -29,6 +29,7 @@
     no_log: false
     # controller_configuration_workflows_enforce_defaults: false
     # no_log: false
+    workflow_job_templates_secure_logging: false
 
   pre_tasks:
     - name: "Setup authentication (block)"

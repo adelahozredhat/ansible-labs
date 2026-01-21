@@ -1,0 +1,21 @@
+---
+version: 3
+
+build_arg_defaults:
+  ANSIBLE_GALAXY_CLI_COLLECTION_OPTS: '--pre'
+
+options:
+  package_manager_path: /usr/bin/microdnf
+  
+dependencies:
+
+  galaxy:
+    collections:
+      # - ansible.builtin
+      - ansible.posix
+      - ansible.utils
+      - community.general
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest

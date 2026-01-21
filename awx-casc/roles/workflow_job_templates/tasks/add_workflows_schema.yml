@@ -2,7 +2,7 @@
 - name: Manage Controller Workflow Nodes Block
   vars:
     ansible_async_dir: "{{ controller_configuration_async_dir }}"
-  no_log: "{{ workflow_job_templates_secure_logging }}"
+  no_log: false
   block:
     # Creating Workflow Node
     - name: Create the Workflow Nodes

@@ -1,0 +1,6 @@
+[?25l[2K[34m?[0m Please select an image: 
+[2K  [1m▸[0m [4mregistry.fedoraproject.org/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag[0m
+[2K    registry.access.redhat.com/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag
+[2K    docker.io/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag
+[2K    quay.io/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag
+[J[2K

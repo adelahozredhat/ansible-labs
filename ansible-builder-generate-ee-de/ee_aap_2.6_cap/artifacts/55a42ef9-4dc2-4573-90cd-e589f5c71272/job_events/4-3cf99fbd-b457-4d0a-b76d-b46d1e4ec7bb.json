@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "3cf99fbd-b457-4d0a-b76d-b46d1e4ec7bb", "counter": 4, "stdout": "  \u001b[1m\u25b8\u001b[0m \u001b[4mregistry.fedoraproject.org/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag\u001b[0m", "start_line": 1, "end_line": 2, "runner_ident": "55a42ef9-4dc2-4573-90cd-e589f5c71272", "created": "2026-01-16T14:08:43.616146"}

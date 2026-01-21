@@ -1,0 +1,5 @@
+collections:
+- community.vmware
+- a10.acos_axapi
+- community.network
+- paloaltonetworks.panos

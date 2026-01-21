@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "c4772c9b-3f2e-4e94-930c-9812f11f562e", "counter": 8, "stdout": "    docker.io/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag", "start_line": 3, "end_line": 4, "runner_ident": "55a42ef9-4dc2-4573-90cd-e589f5c71272", "created": "2026-01-16T14:08:43.616539"}

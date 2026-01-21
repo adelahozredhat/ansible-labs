@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "3e604855-6b64-4e52-9185-1107d4f93939", "counter": 10, "stdout": "    quay.io/aws_account_id.dkr.ecr.region.amazonaws.com/repository_name_2:tag", "start_line": 4, "end_line": 5, "runner_ident": "fe115a03-890c-444a-8abc-2862bf357f86", "created": "2026-01-16T14:09:16.263066"}
