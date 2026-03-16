@@ -1,0 +1,26 @@
+---
+controller_settings:
+  - settings:
+      LICENSE:
+        sku: SER0569
+        trial: true
+        usage: ''
+        satellite: null
+        valid_key: true
+        license_date: 1775361599
+        license_type: trial
+        product_name: Red Hat Ansible Automation Platform
+        support_level: ''
+        account_number: '5910538'
+        instance_count: 100
+        subscription_id: '22080525'
+        subscription_name: 60 Day Product Trial of Red Hat Ansible Automation Platform, Self-Supported
+          (100 Managed Nodes)
+      SUBSCRIPTIONS_USERNAME: "adelahoz@redhat.com"
+      SUBSCRIPTIONS_PASSWORD: "$encrypted$"
+      SUBSCRIPTIONS_CLIENT_ID: ""
+      SUBSCRIPTIONS_CLIENT_SECRET: ""
+      INSTALL_UUID: "1a6f33e0-80d5-49ec-9f53-8bf6873828c1"
+      AWX_TASK_ENV:
+        HOME: /var/lib/awx
+...

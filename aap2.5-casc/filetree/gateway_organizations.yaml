@@ -1,0 +1,5 @@
+---
+gateway_organizations:
+  - name: "Default"
+    description: !unsafe 'The default organization for Ansible Automation Platform'
+...

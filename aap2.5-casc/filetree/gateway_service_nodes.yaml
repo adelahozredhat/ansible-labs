@@ -1,0 +1,11 @@
+---
+gateway_service_nodes:
+  - name: "Node gateway"
+    address: "0.0.0.0"
+    service_cluster: "1"
+    tags: ""
+  - name: "Node controller - example-controller"
+    address: "example-controller-service"
+    service_cluster: "2"
+    tags: ""
+...

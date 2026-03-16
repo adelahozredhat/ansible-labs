@@ -1,0 +1,19 @@
+---
+aap_user_accounts:
+  - username: "admin"
+    email: "test@example.com"
+    first_name: ""
+    last_name: ""
+    password: "''"
+    is_superuser: "True"
+    authenticators: [1]
+    authenticator_uid: "admin"
+  - username: "aap_operator_service_account"
+    email: "test@example.com"
+    first_name: ""
+    last_name: ""
+    password: "''"
+    is_superuser: "True"
+    authenticators: []
+    authenticator_uid: ""
+...

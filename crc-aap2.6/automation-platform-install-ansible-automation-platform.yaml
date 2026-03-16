@@ -48,7 +48,7 @@ spec:
       replicas: 1
     scheduler:
       replicas: 1
-    disabled: true
+    disabled: false
   hub:
     worker:
       replicas: 1
@@ -56,7 +56,7 @@ spec:
       replicas: 1
     content:
       replicas: 1
-    disabled: false
+    disabled: true
     ## Modify to contain your RWM storage class name
     storage_type: file
     file_storage_storage_class: crc-csi-hostpath-provisioner
