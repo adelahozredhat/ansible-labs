@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-ssh-key
+  namespace: ansible-automation-platform
+type: Opaque
+stringData:
+  id_rsa: |
+    {{ b64_priv_key.content | b64decode | indent(4) }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: controller-token-secret
+  namespace: ansible-automation-platform
+type: Opaque
+stringData:
+  host: "https://example-ansible-automation-platform.apps-crc.testing/" # URL interna o externa de AAP
+  token: "{{aap_token}}"        # O usa username/password
+  # username: "admin"
+  # password: "password-seguro"
+---
+apiVersion: tower.ansible.com/v1alpha1
+kind: AnsibleCredential
+metadata:
+  name: github-cred-ssh
+  namespace: ansible-automation-platform
+spec:
+  name: "GitHub SSH Key"
+  organization: "Default"
+  connection_secret: controller-token-secret  # <--- CAMBIO CLAVE
+  type: "Source Control"
+  username: git
+  ssh_secret: git-ssh-key
+---
+apiVersion: tower.ansible.com/v1alpha1
+kind: AnsibleProject
+metadata:
+  name: my-github-project
+  namespace: ansible-automation-platform
+spec:
+  name: "CasC"
+  organization: "Default"
+  scm_type: "git"
+  #repo: "git@github.com:adelahozredhat/casc-aap.git"
+  repo: "https://github.com/adelahozredhat/casc-aap.git"
+  scm_branch: "main"
+  # credential: github-cred-ssh
+  scm_update_on_launch: true
+  connection_secret: controller-token-secret  # <--- CAMBIO CLAVE
+---
+apiVersion: tower.ansible.com/v1alpha1
+kind: JobTemplate
+metadata:
+  name: my-job-template
+  namespace: ansible-automation-platform
+spec:
+  name: "CasC dispatch"
+  job_type: "run"
+  organization: "Default"
+  inventory: "Demo Inventory" # Asegúrate de que este inventario exista
+  project: "CasC"
+  playbook: "playbook-dispatch-general.yml" # Ruta del archivo dentro de tu repo
+  credentials:
+    - "Demo Credential"
+  ask_variables_on_launch: true
+  connection_secret: controller-token-secret  # <--- CAMBIO CLAVE

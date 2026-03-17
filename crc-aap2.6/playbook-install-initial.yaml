@@ -42,7 +42,7 @@
         src: automation-platform-install-operator.yaml
       register: step
       until: step.result.results| json_query('[?result.status.currentCSV]| [0].result.status.currentCSV') is defined and (step.result.results | json_query('[?result.status.currentCSV] | [0].result.status.currentCSV')) is not none
-      retries: "10"
+      retries: "20"
       delay: "15"
 
     - name: Report Operator Status
@@ -192,16 +192,43 @@
       delay: "15"
       delegate_to: localhost
 
-    - name: "Delete the Authentication Token used"
-      ansible.builtin.uri:
-        url: "https://{{ awx_host }}{{aap_oauthtoken_url }}"
-        user: "{{ awx_user }}"
-        password: "{{ awx_password }}"
-        method: DELETE
-        force_basic_auth: true
-        validate_certs: false
-        status_code: 204
-      when: aap_oauthtoken_url is defined
+    - name: 1. Generar nueva clave SSH localmente
+      community.crypto.openssh_keypair:
+        path: "/tmp/id_rsa_github"
+        type: rsa
+        size: 4096
+        state: present
+      register: ssh_key
+
+    - name: Report Operator Status
+      ansible.builtin.debug:
+        msg: "{{ssh_key}}"
+
+    - name: Create AAP objects from template
+      ansible.builtin.template:
+        src: aap-objects.yaml.j2
+        dest: /tmp/aap-objects.yaml
+        newline_sequence: '\r\n'
+
+    - name: Install AAP Objects
+      kubernetes.core.k8s:
+        state: present
+        host: "{{ crc_url_api_client }}"
+        api_key: "{{ token.stdout }}"
+        validate_certs: "{{crc_validate_certs}}"
+        src: /tmp/aap-objects.yaml
+      register: step3
+
+    # - name: "Delete the Authentication Token used"
+    #   ansible.builtin.uri:
+    #     url: "https://{{ awx_host }}{{aap_oauthtoken_url }}"
+    #     user: "{{ awx_user }}"
+    #     password: "{{ awx_password }}"
+    #     method: DELETE
+    #     force_basic_auth: true
+    #     validate_certs: false
+    #     status_code: 204
+    #   when: aap_oauthtoken_url is defined
 
     # --- 0.3 Gitea PAT Creation (using URI)
     - name: Create PAT in GITEA for lab-user
